@@ -9,11 +9,9 @@ const exchange = require('./exchange')
 // push order to exchange at random invertals between 0 and 1 minutes
 //
 
-const asset = 'BTC'
- 
-
 const smartScaleout = {}
 
+smartScaleout.start = async (asset) =>{
 function getAmount(asset){
   const exchAmount = exchange.getAmount(asset)
   const rand = Math.floor(Math.random() * Math.floor(10))
@@ -23,33 +21,27 @@ function getAmount(asset){
 }
 
 const order = {
-  pair: 'BTC-USDT',
+  pair: asset = '-USDT',
   amount: getAmount()
 }
 
 
-// while loop, every rand amount of time betwee, 0-15 min, run the sell function
-
+  // Generate random number between 0 and 15 minutes
 function generateRandTime(){
   return Math.floor(Math.random() * Math.floor(6000))
 }
-
-smartScaleout.start = async () =>{
-
-    // There are 96 15 minute intervals in a day,
-    // Generate random number between 0 and 15 minutes
-    const go = true
-    while (go) {
-      function wait(){
-        return new Promise((resolve, reject) =>{
-             setTimeout(() => {
-              return resolve (exchange.sell('exchangeName', order ))
-            }, generateRandTime(), ) 
-        })
-      }
-     const waited = await wait();
-     console.log(waited)
+  const go = true
+  while (go) {
+    function wait(){
+      return new Promise((resolve, reject) =>{
+            setTimeout(() => {
+            return resolve (exchange.sell('exchangeName', order ))
+          }, generateRandTime(), ) 
+      })
     }
+    const waited = await wait();
+    console.log(waited)
+  }
 }
 
 module.exports = smartScaleout

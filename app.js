@@ -5,7 +5,6 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const app = express();
-const smartScaleout = require('./scripts/smartScaleout')
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -18,8 +17,9 @@ app.use(function(req, res, next) {
   next(createError(404));
 });
 
-// bot 3 start
-smartScaleout.start()
+// Routes
+const smartScaleout = require('./routes/smartScaleout');
+app.use('/', smartScaleout)
 
 // error handler
 app.use(function(err, req, res, next) {
