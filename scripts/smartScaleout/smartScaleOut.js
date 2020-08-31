@@ -17,14 +17,14 @@ start: async (asset, exchangeName) =>{
   const exchAmount = await exchange.getAmount(asset)
   console.log('exch amount is', exchAmount)
   const rand = Math.floor(Math.random() * Math.floor(10))
-  const amount = (exchAmount * 0.01) * rand
+  const amount = (exchAmount * 0.001) * rand
   console.log('amount is', amount)
   return amount
 }
 const amount = await getAmount(asset, exchangeName)
 
 const order = {
-  pair: asset + '-USDT',
+  asset: asset,
   amount: amount
 }
 
@@ -40,7 +40,7 @@ function generateRandTime(){
       return new Promise((resolve, reject) =>{
             setTimeout((exchangeName) => {
             return resolve (
-              console.log('doin stuff'),
+              console.log('pushing order to exchange'),
               exchange.sell(exchangeName, order ))
           }, generateRandTime(), exchangeName) 
       })

@@ -8,6 +8,7 @@ exchange.sell = (exchangeName, order) => {
     console.log('selling on', exchangeName);
     bithumb.sell(order)
   } else if(exchangeName === 'bitmax' ) {
+    console.log('selling on', exchangeName)
     bitmax.sell(order)
   }
 }

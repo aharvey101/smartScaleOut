@@ -7,16 +7,14 @@ const ccxt = new CCXT.bitmax({
 })
 const bitmax = {}
 
-bitmax.sell = (order) =>{
+bitmax.sell = ({asset, amount}) =>{
 
-  console.log('would sell');
-  // ccxt.createOrder()
+  const pair = asset + '/USDT'
+
+  ccxt.createOrder(pair, 'market', 'sell', amount, )
 }
 
 bitmax.getAmount = async (asset) =>{
-  
-  console.log('asset is', asset)
-  
  
   const balance = await ccxt.fetchBalance()
   .then(res =>{
