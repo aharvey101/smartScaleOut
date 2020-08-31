@@ -17,5 +17,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes
 const smartScaleOut = require('./routes/smartScaleOut');
-app.use('/smartscaleout', smartScaleOut)z
+app.use('/smartscaleout', smartScaleOut)
+
 module.exports = app;

@@ -3,19 +3,25 @@ const CCXT = require('ccxt')
 const ccxt = new CCXT.bithumb({
   apiKey: process.env.BITHUMB_API_KEY,
   secret: process.env.BITHUMB_API_SECRET,
+  verbose: true,
 })
 
 const bithumb = {}
 
 bithumb.sell = (order) =>{
-  ccxt.createOrder()
+
+  console.log('would sell');
+  // ccxt.createOrder()
 }
 
-bithumb.getAmount = (asset) =>{
-  ccxt.fetchBalance(params = {})
+bithumb.getAmount = async (asset) =>{
+  const balance = await ccxt.fetchBalance(params = {})
   .then(res =>{
-    console.log(res);
+    console.log('res from balance is', res);
   })
+  .catch(err => console.log(err))
+  console.log(balance)
+  return balance
 }
 
 module.exports = bithumb
