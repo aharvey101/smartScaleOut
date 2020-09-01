@@ -1,9 +1,10 @@
-const bithumb = require('./scripts/extension/bithumb')
-
+// const bithumb = require('./scripts/extension/bithumb')
+const bitmax = require('./scripts/exchanges/bitmax')
 
 async function getMarketData(){
-const balance = await bithumb.fetchBalance()
-const asset = 'BTC'
+  const asset = 'BTC'
+const balance = await bitmax.getMinQauntity(asset)
+
 console.log(balance)
 }
 

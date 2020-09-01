@@ -1,60 +1,61 @@
 const exchange = require('./exchange')
-
-
 // Bot Logic:
-// get total amount from exchange
-// get percentage of that amount
-// build up that amount to make a random amount
-// use that amount as amount for order
-// push order to exchange at random invertals between 0 and 1 minutes
-//
 
 const smartScaleout = {
 
 start: async (asset, exchangeName, days, amount) =>{
-
-
-  // Possible change, Amount to sell over time, generate random amounts
   // get days
   // get amount
   // get intervals
   // devide amount by intervals times rand between 0 and 10
+  // if orderAmount in getAmount is lower than exchange min quantity, times by 10?
+  
+  async function getMinQauntity(exchangeName, asset){
+    const minQuantity = await exchange.getMinQauntity(exchangeName, asset)
+    console.log(minQuantity)
+  }
+  const minQuantity = await getMinQauntity(exchangeName, asset)
 
-  function calcIntervals(days){
-    const minutes = Number(days) * 24 * 60 * 60
-    console.log('minute intervals is ', minutes)
-    return minutes
+async function generateOrder(days, amount, minQuantity){
+    function calcIntervals(days){
+      const minutes = Number(days) * 24 * 60 * 60
+      console.log('minute intervals is ', minutes)
+      return minutes
+    }
+    const intervals = calcIntervals(days)
+
+    async function getAmount(amount, intervals){
+      const rand = Math.floor(Math.random() * Math.floor(10))
+      const orderAmount = amount / intervals * rand
+    return orderAmount
+  }
+  const orderAmount = await getAmount(amount, intervals)
+  if(orderAmount > minQuantity){
+    return orderAmount * 10
   }
 
-  const intervals = calcIntervals(days)
-
-  async function getAmount(amount, intervals){
-  const orderAmount = amount / intervals * rand
-  const rand = Math.floor(Math.random() * Math.floor(10))
-  return orderAmount
+  const order = {
+    asset: asset,
+    amount: orderAmount
+  }
+  return order
 }
-const orderAmount = await getAmount(amount, intervals)
-
-const order = {
-  asset: asset,
-  amount: orderAmount
-}
-
-console.log('order is', order)
 
   // Generate random number between 0 and 1 minutes
 function generateRandTime(){
-  return Math.floor(Math.random() * Math.floor(60000))
+  return Math.floor(Math.random() * Math.floor(10000))
 }
   const go = true
   while (go) {
+    const order = await generateOrder(days, amount, minQuantity)
+
     function wait(){
       return new Promise((resolve, reject) =>{
-            setTimeout((exchangeName) => {
+            setTimeout((exchangeName, order) => {
             return resolve (
               console.log('pushing order to exchange'),
               exchange.sell(exchangeName, order ))
-          }, generateRandTime(), exchangeName) 
+          }, generateRandTime(),exchangeName, order) 
       })
     }
    await wait()
