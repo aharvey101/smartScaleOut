@@ -19,7 +19,6 @@ start: async (asset, exchangeName, days, amount) =>{
 async function generateOrder(days, amount, minQuantity){
     function calcIntervals(days){
       const minutes = Number(days) * 24 * 60 * 60
-      console.log('minute intervals is ', minutes)
       return minutes
     }
     const intervals = calcIntervals(days)
@@ -30,7 +29,7 @@ async function generateOrder(days, amount, minQuantity){
     return orderAmount
   }
   const orderAmount = await getAmount(amount, intervals)
-  if(orderAmount > minQuantity){
+  if(orderAmount < minQuantity){
     return orderAmount * 10
   }
 

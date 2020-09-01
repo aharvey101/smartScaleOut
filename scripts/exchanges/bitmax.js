@@ -1,3 +1,4 @@
+require('dotenv').config()
 const CCXT = require('ccxt')
 
 const ccxt = new CCXT.bitmax({
@@ -7,9 +8,11 @@ const ccxt = new CCXT.bitmax({
 })
 const bitmax = {}
 
-bitmax.sell = ({asset, amount}) =>{
+bitmax.sell = async (asset, amount) =>{
   const pair = asset + '/USDT'
-  ccxt.createOrder(pair, 'market', 'sell', amount, )
+  const response = await ccxt.createOrder(pair, 'market', 'sell', amount, )
+  .then(res => (res))
+  return response
 }
 
 bitmax.getAmount = async (asset) =>{
@@ -29,17 +32,18 @@ bitmax.getMarkets = async (asset) =>{
   console.log(pair)
   const markets = await ccxt.fetchMarkets()
   .then(res => res)
-// console.log(markets)
+ 
   const filtered = markets.find(market => market.id === asset + '/USDT')
-  console.log(filtered)
+
 
 }
 
 bitmax.getMinQauntity = async(asset) => {
   const pair = asset + '/USDT'
-  const minQuantity = await ccxt.fetchMarkets()
-  .then(markets => markets.find(market => market.id === pair).info.minQty)
-  return minQuantity
+  const minSize = await ccxt.fetchMarkets()
+  .then(markets => markets.find(market => market.id === pair).info.tickSize)
+
+  return minSize
 }
 
 module.exports = bitmax
