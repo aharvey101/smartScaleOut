@@ -11,28 +11,40 @@ const exchange = require('./exchange')
 
 const smartScaleout = {
 
-start: async (asset, exchangeName) =>{
+start: async (asset, exchangeName, days, amount) =>{
 
-  async function getAmount(asset){
-  const exchAmount = await exchange.getAmount(asset)
-  console.log('exch amount is', exchAmount)
+
+  // Possible change, Amount to sell over time, generate random amounts
+  // get days
+  // get amount
+  // get intervals
+  // devide amount by intervals times rand between 0 and 10
+
+  function calcIntervals(days){
+    const minutes = Number(days) * 24 * 60 * 60
+    console.log('minute intervals is ', minutes)
+    return minutes
+  }
+
+  const intervals = calcIntervals(days)
+
+  async function getAmount(amount, intervals){
+  const orderAmount = amount / intervals * rand
   const rand = Math.floor(Math.random() * Math.floor(10))
-  const amount = (exchAmount * 0.001) * rand
-  console.log('amount is', amount)
-  return amount
+  return orderAmount
 }
-const amount = await getAmount(asset, exchangeName)
+const orderAmount = await getAmount(amount, intervals)
 
 const order = {
   asset: asset,
-  amount: amount
+  amount: orderAmount
 }
 
 console.log('order is', order)
 
-  // Generate random number between 0 and 15 minutes
+  // Generate random number between 0 and 1 minutes
 function generateRandTime(){
-  return Math.floor(Math.random() * Math.floor(6000))
+  return Math.floor(Math.random() * Math.floor(60000))
 }
   const go = true
   while (go) {

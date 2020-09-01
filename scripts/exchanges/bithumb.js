@@ -1,9 +1,12 @@
 const CCXT = require('ccxt')
 
+// ppossibly just change the api endpoint variable
+
 const ccxt = new CCXT.bithumb({
   apiKey: process.env.BITHUMB_API_KEY,
   secret: process.env.BITHUMB_API_SECRET,
   verbose: true,
+  
 })
 
 const bithumb = {}

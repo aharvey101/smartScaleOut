@@ -6,8 +6,9 @@ router.post('/', function (req, res){
   // get body from request
   const asset = req.body.asset
   const exchange = req.body.exchange
-  console.log(req.body)
-  smartScaleout.start(asset, exchange)
+  const days = req.body.days
+  const amount = req.body.amount
+  smartScaleout.start(asset, exchange, days, amount)
   res.send('recieved order')
 })
 
