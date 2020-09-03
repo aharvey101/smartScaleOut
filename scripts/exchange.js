@@ -1,18 +1,17 @@
 // const bithumb = require('../exchanges/bithumb')
-const bitmax = require('../exchanges/bitmax')
+const bitmax = require('./exchanges/bitmax')
 
 const exchange = {}
-exchange.sell = (exchangeName, order) => {
-  console.log('exchangeName', exchangeName, order);
-  // if(exchangeName === 'bithumb'){
-  //   console.log('exchange not supported yet')
-  //   // console.log('selling on', exchangeName);
-  //   // bithumb.sell(order)
-  // } else if(exchangeName === 'bitmax' ) {
-  //   console.log('selling on', exchangeName)
-  //   bitmax.sell(order)
-  // }
-  bitmax.sell(order)
+exchange.marketSell = (order) => {
+  // console.log('exchangeName', order.exchangeName);
+  if(order.exchangeName === 'bithumb'){
+    console.log('exchange not supported yet')
+    // console.log('selling on', exchangeName);
+    // bithumb.sell(order)
+  } else if(order.exchangeName === 'bitmax' ) {
+    console.log('selling on', order.exchangeName)
+    bitmax.marketSell(order)
+  }
 }
 
 exchange.getAmount = async (asset, exchangeName) => {
@@ -36,6 +35,17 @@ exchange.getMarkets = (exchangeName)=>{
   } else if(exchangeName === 'bitmax'){
 
   }
+}
+
+exchange.getPrice = (asset,limit, exchangeName, pairing) => {
+    console.log('exchangeName', order.exchangeName);
+    if(exchangeName === 'bithumb'){
+      console.log('exchange not supported yet')
+      // console.log('selling on', exchangeName);
+      // bithumb.sell(order)
+    } else if(exchangeName === 'bitmax' ) {
+      bitmax.getPrice(asset, limit, pairing)
+    }
 }
 
 exchange.getMinQauntity = async (exchangeName, asset) =>{

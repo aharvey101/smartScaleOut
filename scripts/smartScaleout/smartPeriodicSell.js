@@ -1,9 +1,9 @@
-const exchange = require('./exchange')
+const exchange = require('../exchange')
 // Bot Logic:
 
 const smartScaleout = {
 
-start: async (asset, exchangeName, days, amount) =>{
+start: async ({asset, exchangeName, days, amount, pairing}) =>{
   // get days
   // get amount
   // get intervals
@@ -13,29 +13,34 @@ start: async (asset, exchangeName, days, amount) =>{
   async function getMinQauntity(exchangeName, asset){
     const minQuantity = await exchange.getMinQauntity(exchangeName, asset)
     console.log(minQuantity)
+    return minQuantity
   }
   const minQuantity = await getMinQauntity(exchangeName, asset)
 
-async function generateOrder(days, amount, minQuantity){
+async function generateOrder(days, amount, minQuantity, exchangeName, pairing){
+    console.log(pairing)
     function calcIntervals(days){
       const minutes = Number(days) * 24 * 60 * 60
       return minutes
     }
     const intervals = calcIntervals(days)
 
-    async function getAmount(amount, intervals){
+    async function getAmount(amount, interval, minQuantity){
       const rand = Math.floor(Math.random() * Math.floor(10))
-      const orderAmount = amount / intervals * rand
+      const orderAmount = amount / interval * rand
+      if(orderAmount < minQuantity){
+        return orderAmount * 10
+      }
     return orderAmount
   }
-  const orderAmount = await getAmount(amount, intervals)
-  if(orderAmount < minQuantity){
-    return orderAmount * 10
-  }
+  const orderAmount = await getAmount(amount, intervals, minQuantity)
+  
 
   const order = {
+    exchangeName: exchangeName,
     asset: asset,
-    amount: orderAmount
+    amount: orderAmount,
+    pairing: pairing
   }
   return order
 }
@@ -46,15 +51,16 @@ function generateRandTime(){
 }
   const go = true
   while (go) {
-    const order = await generateOrder(days, amount, minQuantity)
+    const order = await generateOrder(days, amount, minQuantity, exchangeName, pairing)
 
     function wait(){
       return new Promise((resolve, reject) =>{
-            setTimeout((exchangeName, order) => {
+            setTimeout((order) => {
             return resolve (
               console.log('pushing order to exchange'),
-              exchange.sell(exchangeName, order ))
-          }, generateRandTime(),exchangeName, order) 
+              console.log(order),
+              exchange.marketSell(order))
+          }, generateRandTime(), order) 
       })
     }
    await wait()
