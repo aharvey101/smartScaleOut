@@ -76,8 +76,6 @@ class Bithumb {
     async function createSignatureString(apiKey, serverTime, apiURL, endpoint) {
       //string json = apikey&msgNo&timestamp&version
       const now = serverTime
-      console.log('now is ', now);
-      // const ss = apiKey + 123456789 + now
       const ss = `${apiURL}${endpoint}?apiKey=${apiKey}&assetType=spot&msgNo=${now}&timestamp=${now}`
       console.log(ss)
       return ss
@@ -125,8 +123,8 @@ class Bithumb {
     return this._private('/spot/assetList')
   }
 
-  async getTimestamp(){
-    return this._getTimestamp()
+  async getServerTime(){
+    return this._private('/serverTime')
   }
 
 }

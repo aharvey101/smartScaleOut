@@ -10,7 +10,7 @@ const bitmax = {}
 
 bitmax.sell = async (asset, amount) =>{
   const pair = asset + '/USDT'
-  const response = await ccxt.createOrder(pair, 'market', 'sell', amount, )
+  const response = await ccxt.createOrder( pair, 'market', 'sell', amount,)
   .then(res => (res))
   return response
 }
