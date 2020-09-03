@@ -18,8 +18,9 @@ bitmax.marketSell = async ({asset, amount, pairing}) =>{
   return response
 }
 
-bitmax.limitSell = async (asset, amount) => {
-  const pair = asset
+bitmax.limitSell = async (order) => {
+  const pair = order.asset + '/' + order.pairing
+  const response = await ccxt.createOrder(pair, 'limit', 'sell', order.amount, order.price)
 }
 
 bitmax.getAmount = async (asset) =>{
@@ -52,10 +53,13 @@ bitmax.getPrice = async (asset, limit, pairing) => {
   return price
 }
 
-bitmax.getMinQauntity = async(asset) => {
-  const pair = asset + '/USDT'
+bitmax.getMinQauntity = async(asset, pairing) => {
+  const pair = asset + '/' + pairing
+  
   const minSize = await ccxt.fetchMarkets()
-  .then(markets => markets.find(market => market.id === pair).info.tickSize)
+  // .then(result => console.log(result))
+  .then(markets => markets.find(market => market.id === pair).info.lotSize)
+  // console.log(minSize)
   return minSize
 }
 

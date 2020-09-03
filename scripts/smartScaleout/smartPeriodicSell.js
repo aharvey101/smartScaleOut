@@ -10,15 +10,15 @@ start: async ({asset, exchangeName, days, amount, pairing}) =>{
   // devide amount by intervals times rand between 0 and 10
   // if orderAmount in getAmount is lower than exchange min quantity, times by 10?
   
-  async function getMinQauntity(exchangeName, asset){
-    const minQuantity = await exchange.getMinQauntity(exchangeName, asset)
+  async function getMinQauntity(exchangeName, asset, pairing){
+    const minQuantity = await exchange.getMinQauntity(exchangeName, asset, pairing)
     console.log(minQuantity)
     return minQuantity
   }
-  const minQuantity = await getMinQauntity(exchangeName, asset)
+  const minQuantity = await getMinQauntity(exchangeName, asset, pairing)
 
 async function generateOrder(days, amount, minQuantity, exchangeName, pairing){
-    console.log(pairing)
+
     function calcIntervals(days){
       const minutes = Number(days) * 24 * 60 * 60
       return minutes
@@ -29,7 +29,7 @@ async function generateOrder(days, amount, minQuantity, exchangeName, pairing){
       const rand = Math.floor(Math.random() * Math.floor(10))
       const orderAmount = amount / interval * rand
       if(orderAmount < minQuantity){
-        return orderAmount * 10
+        return orderAmount * 3
       }
     return orderAmount
   }
