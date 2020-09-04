@@ -1,8 +1,9 @@
 const axios = require('axios')
 const https = require('https')
-const crypto = require('crypto')
+// const crypto = require('crypto')
+const sha256 = require('js-sha256').sha256
 const querystring = require('querystring')
-const cryptojs = require('crypto-js')
+// const cryptojs = require('crypto-js')
 
 class Bithumb {
   constructor(key, secret) {
@@ -42,7 +43,8 @@ class Bithumb {
   }
 
   async getServerTime() {
-    return this._public('/serverTime')
+    const response = await this._public('/serverTime')
+    return response.timestamp
   }
   // async getRecentTransactions (currency) {
   //   return this._public('/public/recent_transactions', currency)
@@ -67,57 +69,47 @@ class Bithumb {
 
     parameters.endPoint = endpoint
 
-
     // get Servertime
-    const serverTime = await getServerTime(this.API_URL)
-    .then(response => (response))
+    const serverTime = await this.getServerTime()
+    // .then(response => (response))
+    // console.log('serverTime = ', serverTime)
     // then createSignatureString
-    const signatureString = await createSignatureString(this.apiKey, serverTime, this.API_URL, endpoint)
+    const signatureString = await createSignatureString(this.apiKey, serverTime)
     
-    async function createSignatureString(apiKey, serverTime, apiURL, endpoint) {
+    async function createSignatureString(apiKey, serverTime) {
+      // REFACTOR THIS CODE TO ACCEPT REQUEST PARAMETERS, KEY-SORT THEM, CONVERT TO key1=value1&key2=value2 STRING
       //string json = apikey&msgNo&timestamp&version
       const now = serverTime
-      const ss = `${apiURL}${endpoint}?apiKey=${apiKey}&assetType=spot&msgNo=${now}&timestamp=${now}`
-      console.log(ss)
+      const ss = `apiKey=${apiKey}&assetType=spot&coinType=BTC&msgNo=msgNo&timestamp=${now}`
+      // console.log('SignatureString = ', ss)
       return ss
     }
-    const apiSignature = Buffer.from(crypto.createHmac('sha256', signatureString).update(this.secret).digest('hex')).toString('base64')
-    // const toHash = cryptojs.HmacSHA256(signatureString, this.secret)
-    // const newSig = cryptojs.enc.Base64.stringify(toHash)
-    // console.log(newSig)
-    async function getServerTime(apiUrl) {
-      const timestamp = await axios({
-        method: 'GET',
-        url: apiUrl + '/serverTime'
-      })
-      .then(response => (response))
-      .catch(error => console.log(error))
-      console.log('timestamp is', timestamp.data.timestamp);
-      return timestamp.data.timestamp
-    }
+    // const apiSignature = crypto.createHmac('sha256', this.secret).update(signatureString).digest('hex')
+    const apiSignature = sha256.hmac(this.secret, signatureString)
+    // console.log('apiSignature', apiSignature)
+    
     // then create options from all parameters
     const options = {
       method: 'POST',
       url: this.API_URL + endpoint,
-      params: {
-        // apiKey: this.apiKey,
-        // assetType:'spot',
-        // msgNo: serverTime,
-        // timestamp: serverTime,
-        // signature: apiSignature
+      data: {
+        'apiKey': this.apiKey,
+        'assetType':'spot',
+        'coinType' : 'BTC',
+        'msgNo': 'msgNo',
+        'timestamp': serverTime,
+        'signature': apiSignature
       },
       headers: {
-        'content-type': 'application/json',
-        'api-key': this.apiKey,
-        'msgNo': serverTime,
-        'assetType': 'spot',
-        'signiture': apiSignature
+        'content-type': 'application/json'
       },
     }
+    // console.log('options =', options)
 
     const response = await axios(options)
-      .then(response => (response))
+      .then(response => (response.data))
       .catch(error => console.log(error))
+    // console.log('response =', response)
 
     return response
   }
@@ -126,13 +118,17 @@ class Bithumb {
     return this._private('/trade/placeOrder', { symbol, type, side, price, quantity })
   }
 
+  async limitSell(symbol, type, side, price, quantity){
+    return this._private('./trade/p')
+  }
+
   async getAccount() {
     return this._private('/spot/assetList')
   }
 
-  async getServerTime(){
-    return this._private('/serverTime')
-  }
+  // async getServerTime(){
+  //   return this._private('/serverTime')
+  // }
 
 }
 

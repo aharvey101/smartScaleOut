@@ -24,6 +24,18 @@ console.log(response);
 return response
 }
 
+bithumb.limitOrder = async (order) =>{
+ 
+    const newOrder = {
+      symbol: order.asset + '-USDT',
+      type: 'market',
+      side: 'sell',
+      quantity: order.amount,
+      price: order.price
+    }
+const response = await connection.limitOrder()  
+}
+
 bithumb.getAmount = async (asset) =>{
   const balance = await connection.fetchBalance(params = {})
   .then(res =>{
