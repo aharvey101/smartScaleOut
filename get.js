@@ -1,6 +1,7 @@
 // const bithumb = require('./scripts/extension/bithumb')
 const axios = require('axios')
 const bitmax = require('./scripts/exchanges/bitmax')
+const exchange = require('./scripts/exchange')
 
 // async function getMarketData(){
 //   const asset = 'ETH'
@@ -20,14 +21,14 @@ const bitmax = require('./scripts/exchanges/bitmax')
 
 // sell('ETH', 0.00001)
 
-const bithumb = require('./scripts/exchanges/bithumb')
+// const bithumb = require('./scripts/exchanges/bithumb')
 
-const getAccount = async () => {
-  const accountInfo = await bithumb.getAccount()
-  console.log(accountInfo)
-}
+// const getAccount = async () => {
+//   const accountInfo = await bithumb.getAccount()
+//   console.log(accountInfo)
+// }
 
-getAccount()
+// getAccount()
 
 // function marketSell(){
 //   const order = {
@@ -54,17 +55,5 @@ getAccount()
 // serverTime()
 
 
-// async function getServerTime(apiUrl) {
-//   const timestamp = await axios({
-//     method: 'GET',
-//     url: apiUrl + '/serverTime'
-//   })
-//   .then(response => (response))
-//   .catch(error => console.log(error))
-//   console.log('timestamp is', timestamp.data);
-//   return timestamp.data
-// }
 
-// const url = 'http://global-openapi.bithumb.pro/openapi/v1'
-
-// getServerTime(url)
+exchange.limitOrder(order)

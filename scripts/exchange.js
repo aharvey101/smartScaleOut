@@ -49,7 +49,7 @@ exchange.getMarkets = (exchangeName)=>{
 }
 
 exchange.getPrice = async (asset,limit, exchangeName, pairing) => {
-    console.log('exchangeName', exchangeName);
+ 
     if(exchangeName === 'bithumb'){
       console.log('exchange not supported yet')
       // console.log('selling on', exchangeName);
@@ -68,6 +68,17 @@ exchange.getMinQauntity = async (exchangeName, asset, pairing) =>{
     const minQuantity = await bitmax.getMinQauntity(asset, pairing)
     console.log('min quantity', minQuantity)
     return minQuantity
+  }
+}
+
+exchange.cancelOrders = async (asset, exchangeName, pairing) => {
+  if(exchangeName === 'bithumb'){
+    console.log('exchange not supported yet')
+    // console.log('selling on', exchangeName);
+    // bithumb.sell(order)
+  } else if(exchangeName === 'bitmax' ){
+    const response = await bitmax.cancelOrders(asset, pairing );
+    return response
   }
 }
 

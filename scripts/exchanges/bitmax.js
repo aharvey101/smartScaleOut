@@ -63,4 +63,12 @@ bitmax.getMinQauntity = async(asset, pairing) => {
   return minSize
 }
 
+bitmax.cancelOrders = async (asset, pairing)=> {
+  const pair = asset + '/' + pairing
+  const response = await ccxt.cancelAllOrders(pair)
+  .then((response) =>(response))
+  console.log(response)
+  return response
+}
+
 module.exports = bitmax
