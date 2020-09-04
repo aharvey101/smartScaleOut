@@ -5,9 +5,18 @@ const exchange = require('./scripts/exchange')
 
 const bithumb = require('./scripts/exchanges/bithumb')
 
+
+// async function test(){
+
+//   const res = await bithumb.getAccount()
+//   .then(res=>(res))
+//   console.log(res)
+// }
+// test()
+
 const order = {
   asset: "BTC",
-  price: 12000,
+  price: 10500,
   pairing: "USDT",
   amount: 0.001,
   exchangeName: "bitmax"

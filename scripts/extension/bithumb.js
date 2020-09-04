@@ -8,7 +8,7 @@ class Bithumb {
   constructor(key, secret) {
     this.apiKey = key
     this.secret = secret
-    this.API_URL = 'http://global-openapi.bithumb.pro/openapi/v1'
+    this.API_URL = 'https://global-openapi.bithumb.pro/openapi/v1'
     this.version = 'V1.0.0'
   }
   // ----------------------------------------------------------------
@@ -81,10 +81,10 @@ class Bithumb {
       console.log(ss)
       return ss
     }
-    const apiSignature = Buffer.from(crypto.createHmac('sha256', this.secret).update(signatureString).digest('hex')).toString('base64')
-    const toHash = cryptojs.HmacSHA256(signatureString, this.secret)
-    const newSig = cryptojs.enc.Base64.stringify(toHash)
-    console.log(newSig)
+    const apiSignature = Buffer.from(crypto.createHmac('sha256', signatureString).update(this.secret).digest('hex')).toString('base64')
+    // const toHash = cryptojs.HmacSHA256(signatureString, this.secret)
+    // const newSig = cryptojs.enc.Base64.stringify(toHash)
+    // console.log(newSig)
     async function getServerTime(apiUrl) {
       const timestamp = await axios({
         method: 'GET',
@@ -104,7 +104,7 @@ class Bithumb {
         // assetType:'spot',
         // msgNo: serverTime,
         // timestamp: serverTime,
-        // signature: newSig
+        // signature: apiSignature
       },
       headers: {
         'content-type': 'application/json',

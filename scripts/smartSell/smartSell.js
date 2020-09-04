@@ -34,13 +34,8 @@ smartSell.start = async ({asset, days, amount, exchangeName, pairing}) => {
   }
   //-----------------------------------------------------------------
   // Generate Order
-  function generateOrder({asset, intervals, amount, minQuantity,exchangeName, pairing, bestPrice}){
-
-  const orderAmount = getAmount(amount, intervals)
-  if(orderAmount < minQuantity){
-    return orderAmount * 10
-  }
-  
+  function generateOrder({asset, intervals, amount, minQuantity, exchangeName,pairing , bestPrice}){
+  const orderAmount = getAmount(amount, intervals)  
   const order = {
     asset: asset,
     amount: orderAmount,
@@ -61,11 +56,9 @@ const preGen = {
   bestPrice: bestPrice
 }
 
-console.log(generateOrder(preGen))
 const order = generateOrder(preGen)
-  exchange.limitOrder(order)
-//TODO:
-// --------------------------------
+exchange.limitOrder(order)
+const OA=amount
 let go = true
 while (go) {
   
@@ -87,34 +80,28 @@ while (go) {
     if(price !== order.price){
       console.log('price difference', order.price, price)
       // delete all orders on pair
-      console.log('cancellign orders')
+      console.log('cancelling orders')
       exchange.cancelOrders(asset, exchangeName, pairing)
       .then(async ()=>{
         // get best ask price
         console.log('placing new order')
         const price = await getPrice(asset,1, exchangeName, pairing)
         .then(lastPrice =>(lastPrice))
-        const orderAmount = getAmount(amount, intervals)
-        console.log(price)
         // place new order
         const preGen = {
-          asset: asset,
+          asset: 'BTC',
           intervals: intervals,
-          amount: orderAmount,
+          amount: OA,
           minQuantity: minQuantity,
-          exchangeName: exchangeName,
-          pairing: pairing,
-          price: price
+          exchangeName: 'bitmax',
+          pairing: 'USDT',
+          bestPrice: price
         }
-        console.log(preGen)
         const order = generateOrder(preGen)
+        console.log('order is', order)
        const res = exchange.limitOrder(order)
-       console.log('response from placing order is', res)
-        
       })
     }
-    
-
   }
 
 }

@@ -15,6 +15,7 @@ exchange.marketSell = (order) => {
 }
 
 exchange.limitOrder = async (order) =>{
+  console.log(order)
   if(order.exchangeName === 'bithumb'){
     console.log('exchange not supported yet')
     // console.log('selling on', exchangeName);
