@@ -2,6 +2,7 @@ const axios = require('axios')
 const https = require('https')
 const crypto = require('crypto')
 const querystring = require('querystring')
+const cryptojs = require('crypto-js')
 
 class Bithumb {
   constructor(key, secret) {
@@ -81,7 +82,9 @@ class Bithumb {
       return ss
     }
     const apiSignature = Buffer.from(crypto.createHmac('sha256', this.secret).update(signatureString).digest('hex')).toString('base64')
-    
+    const toHash = cryptojs.HmacSHA256(signatureString, this.secret)
+    const newSig = cryptojs.enc.Base64.stringify(toHash)
+    console.log(newSig)
     async function getServerTime(apiUrl) {
       const timestamp = await axios({
         method: 'GET',
@@ -97,14 +100,18 @@ class Bithumb {
       method: 'POST',
       url: this.API_URL + endpoint,
       params: {
-        apiKey: this.apiKey,
-        assetType:'spot',
-        msgNo: serverTime,
-        timestamp: serverTime,
-        signature: apiSignature
+        // apiKey: this.apiKey,
+        // assetType:'spot',
+        // msgNo: serverTime,
+        // timestamp: serverTime,
+        // signature: newSig
       },
       headers: {
-        'content-type': 'application/json'
+        'content-type': 'application/json',
+        'api-key': this.apiKey,
+        'msgNo': serverTime,
+        'assetType': 'spot',
+        'signiture': apiSignature
       },
     }
 

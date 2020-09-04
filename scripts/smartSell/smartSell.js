@@ -26,14 +26,16 @@ smartSell.start = async ({asset, days, amount, exchangeName, pairing}) => {
       return minutes
     }
     const intervals = calcIntervals(days)
-    //---------------------------------
-  // Generate Order
-  function generateOrder({asset, intervals, amount, minQuantity,exchangeName, pairing, bestPrice}){
+  // --------------------------------------------------------------
     function getAmount(amount, intervals){
       const rand = Math.floor(Math.random() * Math.floor(10))
       const orderAmount = amount / intervals * rand
     return orderAmount
   }
+  //-----------------------------------------------------------------
+  // Generate Order
+  function generateOrder({asset, intervals, amount, minQuantity,exchangeName, pairing, bestPrice}){
+
   const orderAmount = getAmount(amount, intervals)
   if(orderAmount < minQuantity){
     return orderAmount * 10
@@ -58,7 +60,9 @@ const preGen = {
   pairing: pairing,
   bestPrice: bestPrice
 }
- const order = generateOrder(preGen)
+
+console.log(generateOrder(preGen))
+const order = generateOrder(preGen)
   exchange.limitOrder(order)
 //TODO:
 // --------------------------------
@@ -81,22 +85,32 @@ while (go) {
 
     // if price has changed,cancel all orders on pair and place new order, getting the price again
     if(price !== order.price){
+      console.log('price difference', order.price, price)
       // delete all orders on pair
       console.log('cancellign orders')
       exchange.cancelOrders(asset, exchangeName, pairing)
-      .then(()=>{
+      .then(async ()=>{
+        // get best ask price
+        console.log('placing new order')
+        const price = await getPrice(asset,1, exchangeName, pairing)
+        .then(lastPrice =>(lastPrice))
+        const orderAmount = getAmount(amount, intervals)
+        console.log(price)
         // place new order
         const preGen = {
           asset: asset,
           intervals: intervals,
-          amount: amount,
+          amount: orderAmount,
           minQuantity: minQuantity,
           exchangeName: exchangeName,
           pairing: pairing,
-          bestPrice: getPrice()
+          price: price
         }
+        console.log(preGen)
         const order = generateOrder(preGen)
-        exchange.limitOrder(order)
+       const res = exchange.limitOrder(order)
+       console.log('response from placing order is', res)
+        
       })
     }
     

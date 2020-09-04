@@ -14,14 +14,16 @@ exchange.marketSell = (order) => {
   }
 }
 
-exchange.limitOrder = (order) =>{
+exchange.limitOrder = async (order) =>{
   if(order.exchangeName === 'bithumb'){
     console.log('exchange not supported yet')
     // console.log('selling on', exchangeName);
     // bithumb.sell(order)
   } else if(order.exchangeName === 'bitmax' ) {
     console.log('selling on', order.exchangeName)
-    bitmax.limitSell(order)
+    const res = await bitmax.limitSell(order)
+    .then(res => (res))
+    return res
   }
 }
 
