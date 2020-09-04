@@ -82,6 +82,7 @@ while (go) {
     // if price has changed,cancel all orders on pair and place new order, getting the price again
     if(price !== order.price){
       // delete all orders on pair
+      console.log('cancellign orders')
       exchange.cancelOrders(asset, exchangeName, pairing)
       .then(()=>{
         // place new order
