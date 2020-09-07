@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 
-const smartPeriodicSell = require('../scripts/smartScaleout/smartPeriodicSell')
+const smartPeriodicSell = require('../scripts/smartPeriodicSell/smartPeriodicSell')
 router.post('/', function (req, res){
 
 

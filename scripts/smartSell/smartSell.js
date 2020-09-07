@@ -15,11 +15,11 @@ smartSell.start = async ({asset, days, amount, exchangeName, pairing}) => {
   .then(price => (price))
   //----------------------------------------------------------------
   // get minQuantity allowed: 
-  async function getMinQauntity(exchangeName, asset, pairing){
-    const minQuantity = await exchange.getMinQauntity(exchangeName, asset, pairing)
+  async function getMinQuantity(exchangeName, asset, pairing){
+    const minQuantity = await exchange.getMinQuantity(exchangeName, asset, pairing)
     return minQuantity
   }
-  const minQuantity = await getMinQauntity(exchangeName, asset, pairing)
+  const minQuantity = await getMinQuantity(exchangeName, asset, pairing)
   //----------------------------------------------------------------
    function calcIntervals(days){
       const minutes = Number(days) * 24 * 60 * 60
@@ -34,7 +34,9 @@ smartSell.start = async ({asset, days, amount, exchangeName, pairing}) => {
   }
   //-----------------------------------------------------------------
   // Generate Order
-  function generateOrder({asset, intervals, amount, minQuantity, exchangeName,pairing , bestPrice}){
+  function generateOrder({asset, intervals, amount, exchangeName,pairing , bestPrice}){
+    // TODO:
+    // -[] Add min tick to order so that the new Order sits infront of existing orderbook ask order
   const orderAmount = getAmount(amount, intervals)  
   const order = {
     asset: asset,
@@ -63,7 +65,7 @@ let go = true
 while (go) {
   
   //get new price, 
-  // Every second check price
+  // Every second check orderbook for best ask price
     async function getNewPrice(asset, limit, exchangeName, pairing) {
       const price = await new Promise((resolve, reject) => {
         setTimeout((asset,limit, exchangeName, pairing) => {
@@ -81,6 +83,8 @@ while (go) {
       console.log('price difference', order.price, price)
       // delete all orders on pair
       console.log('cancelling orders')
+      // Possibly use order id instead of cancel every order incase we are running multiple strategies
+      // on the one account
       exchange.cancelOrders(asset, exchangeName, pairing)
       .then(async ()=>{
         // get best ask price

@@ -33,6 +33,12 @@ bithumb.limitOrder = async (order) =>{
 const response = await ccxt.limitOrder(newOrder.symbol, newOrder.type, newOrder.side, undefined, newOrder.quantity)  
 }
 
+bithumb.getMinQuantity = async (asset, pairing) => {
+const pair = asset + '/' + pairing
+const minSize = await ccxt.market(pair)
+console.log(minSize)  
+}
+
 bithumb.getAmount = async (asset) =>{
   const balance = await ccxt.fetchBalance()
   .then(res =>{

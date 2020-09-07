@@ -4,10 +4,21 @@ const bitmax = require('./scripts/exchanges/bitmax')
 const exchange = require('./scripts/exchange')
 
 const bithumb = require('./scripts/exchanges/bithumb')
-const {Exchange} = require ('ccxt');
 
-console.log(Exchange)
+// function getMinQuantity(){
+//   bithumb.getMinQuantity('BTC', 'USDT')
+// }
+// getMinQuantity()
 
+
+// test ccxt.market
+
+async function getMinQuantity() {
+  bitmax.getMinQuantity('BTC', 'USDT')
+
+}
+
+getMinQuantity()
 
 // async function test(){
 
@@ -32,9 +43,9 @@ console.log(Exchange)
 
 //test bitmax account balance
 
-function getAccount() {
-  console.log('getting account')
-  exchange.getAmount(undefined, 'bithumb')
-}
+// function getAccount() {
+//   console.log('getting account')
+//   exchange.getAmount(undefined, 'bithumb')
+// }
 
-getAccount()
+// getAccount()
