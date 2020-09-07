@@ -5,6 +5,7 @@ const ccxt = new CCXT({
   secret: process.env.BITHUMB_API_PRO_SECRET,
 })
 
+
 const bithumb = {}
 
 bithumb.marketSell = async (order) =>{
