@@ -51,7 +51,7 @@ bithumb.ticker = async (asset) =>{
 }
 
 bithumb.getServerTime = async () => {
-  const serverTime = await ccxt.getServerTime()
+  const serverTime = await ccxt
   return serverTime
 }
 
