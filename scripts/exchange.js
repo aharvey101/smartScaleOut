@@ -1,5 +1,6 @@
 // const bithumb = require('../exchanges/bithumb')
 const bitmax = require('./exchanges/bitmax')
+const bithumb = require('./exchanges/bithumb')
 
 const exchange = {}
 exchange.marketSell = (order) => {
@@ -31,7 +32,7 @@ exchange.limitOrder = async (order) =>{
 exchange.getAmount = async (asset, exchangeName) => {
   if(exchangeName === 'bithumb'){
     console.log('getting amount from', exchangeName)
-    console.log('this exchange is not supported yet')
+    bithumb.getAmount(asset)
   } else if(exchangeName === 'bitmax'){
       const amount = await bitmax.getAmount(asset)
       .then(res =>{
