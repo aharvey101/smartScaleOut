@@ -5,47 +5,42 @@ const exchange = require('./scripts/exchange')
 
 const bithumb = require('./scripts/exchanges/bithumb')
 
-// function getMinQuantity(){
-//   bithumb.getMinQuantity('BTC', 'USDT')
+// async function getMinQuantity() {
+//   const minQuantity = await bithumb.getMinQuantity('BTC', 'USDT')
+//   .then(result => (result))
+//   console.log(minQuantity)
 // }
 // getMinQuantity()
 
+// async function getPrice() {
+//   const price = await bithumb.getPrice('BTC', 'USDT')
+// }
+// getPrice()
 
-// test ccxt.market
+// async function getBalance() {
+//   const balance = await bithumb.getAccount()
+//   .then(result => (result))
+//   console.log(balance)
+// }
 
-async function getMinQuantity() {
-  bitmax.getMinQuantity('BTC', 'USDT')
+// getBalance()
 
+async function sell(){
+  const order = {
+    asset: "BTC",
+    pairing: "USDT",
+    amount:0.0001,
+    price: 10000
+  }
+  const response = await bithumb.limitOrder(order)
+  console.log(response);
 }
 
-getMinQuantity()
+sell()
 
-// async function test(){
-
-//   const res = await bithumb.getAccount()
-//   .then(res=>(res))
-//   console.log(res)
+// async function markets(){
+//   const ticker = await bithumb.getMarkets('BTC')
+//   .then(result => (result))
+//   console.log(ticker)
 // }
-// test()
-
-// const order = {
-//   asset: "BTC",
-//   price: 10500,
-//   pairing: "USDT",
-//   amount: 0.001,
-//   exchangeName: "bitmax"
-// }
-// function placeOrder(){
-//   console.log('placingOrder')
-//   exchange.limitOrder(order)
-// }
-// placeOrder()
-
-//test bitmax account balance
-
-// function getAccount() {
-//   console.log('getting account')
-//   exchange.getAmount(undefined, 'bithumb')
-// }
-
-// getAccount()
+// markets()

@@ -73,7 +73,6 @@ while (go) {
         }, 1000, asset,limit, exchangeName, pairing)
       })
       .then(price => (price))
-
       return price
     }
     const price = await getNewPrice(asset,1, exchangeName, pairing)

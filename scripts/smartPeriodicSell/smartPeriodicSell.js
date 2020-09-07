@@ -49,7 +49,8 @@ start: async ({asset, exchangeName, days, amount, pairing}) =>{
     //TO DO: 
     //change back to 1 minute
   function generateRandTime(){
-    return Math.floor(Math.random() * Math.floor(60 * 1000))
+    // return Math.floor(Math.random() * Math.floor(60 * 1000))
+    return Math.floor(Math.random() * Math.floor(10000))
   }
   const go = true
   while (go) {
