@@ -1,6 +1,6 @@
 require('dotenv').config()
-const CCXT = require('ccxt')
-const ccxt = new CCXT.bithumbpro({
+const CCXT = require('../extension/bithumbccxt')
+const ccxt = new CCXT({
   apiKey: process.env.BITHUMB_API_PRO_KEY,
   secret: process.env.BITHUMB_API_PRO_SECRET,
 })
@@ -30,7 +30,7 @@ bithumb.limitOrder = async (order) =>{
       quantity: order.amount,
       price: order.price
     }
-const response = await ccxt.limitOrder()  
+const response = await ccxt.limitOrder(newOrder.symbol, newOrder.type, newOrder.side, undefined, newOrder.quantity)  
 }
 
 bithumb.getAmount = async (asset) =>{
