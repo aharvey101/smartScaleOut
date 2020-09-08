@@ -18,9 +18,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Routes
 const smartPeriodicSell = require('./routes/smartPeriodicSell');
 const smartSell = require('./routes/smartSell');
+const atrBot = require('./routes/atrBot')
 
 // Use Routes
 app.use('/smartPeriodicSell', smartPeriodicSell)
 app.use('/smartSell', smartSell)
+app.use('/atrBot', atrBot)
 
 module.exports = app;

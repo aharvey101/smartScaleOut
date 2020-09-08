@@ -87,5 +87,13 @@ exchange.cancelOrders = async (asset, exchangeName, pairing) => {
   }
 }
 
+exchange.getCandles = async (asset, pairing,exchangeName, timeframe, limit) =>{
+  if(exchangeName === 'bithumb'){
+    console.log(`getting ${limit} candles from ${exchangeName}`);
+    const candles = await bithumb.getCandles(asset, pairing, timeframe, limit).then(res => (res))
+    return candles
+  }
+}
+
 module.exports = exchange
 

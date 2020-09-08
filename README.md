@@ -7,6 +7,20 @@ Routes:
 
 ## TO DO:
 
- - [] Bithumb custom extension
- - [] chagne logic to take in date and use that to generate amount to sell over time period
- - [] 
+ - [] Bithumb, still not posting orders - "not ennough in account"
+ - [] Reame everything bithumb to bithumbPro
+
+## TODO SmartSell:
+
+- [] Cancel orders on order ID basis, not symbol wide basis
+- [] Add min tick to order price so that the order is sitting at the front of the order book
+- [] 
+
+## TODO atrBot:
+
+- [] Get candles
+- [] Convert candles array into array of objects
+- [] build ATR calculation
+- [] Apply calculation to candles array
+- [] Update calculation upon every new candle
+- [] Update orders upon ATR Update
