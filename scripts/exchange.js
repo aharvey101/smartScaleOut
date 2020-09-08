@@ -17,12 +17,10 @@ exchange.marketSell = (order) => {
 }
 
 exchange.limitOrder = async (order) =>{
-  console.log(order)
-  
+
   if(order.exchangeName === 'bithumb'){
-    console.log('exchange not supported yet')
-    // console.log('selling on', exchangeName);
-    // bithumb.sell(order)
+    console.log('selling on', order.exchangeName);
+    bithumb.marketSell(order)
   } else if(order.exchangeName === 'bitmax' ) {
     console.log('selling on', order.exchangeName)
     const res = await bitmax.limitSell(order)
@@ -91,6 +89,10 @@ exchange.getCandles = async (asset, pairing,exchangeName, timeframe, limit) =>{
   if(exchangeName === 'bithumb'){
     console.log(`getting ${limit} candles from ${exchangeName}`);
     const candles = await bithumb.getCandles(asset, pairing, timeframe, limit).then(res => (res))
+    return candles
+  } else if(exchangeName === 'bitmax') {
+    console.log(`getting ${limit} candles from ${exchangeName}`);
+    const candles = await bitmax.getCandles(asset, pairing, timeframe, limit).then(res =>(res))
     return candles
   }
 }

@@ -86,4 +86,9 @@ bitmax.cancelOrders = async (asset, pairing)=> {
   return response
 }
 
+bitmax.getCandles = async (asset, pairing, timeframe, limit) => {
+  const pair = asset  + "/" + pairing
+  const response = await ccxt.fetchOHLCV(pair, timeframe, undefined, limit).then(res => (res))
+  return response
+}
 module.exports = bitmax
