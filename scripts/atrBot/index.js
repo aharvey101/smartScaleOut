@@ -134,7 +134,6 @@ atrBot.start = async (input) => {
       ordersArray.forEach(order => {
         exchange.limitOrder(order)
       })
-
     })
   }
 
