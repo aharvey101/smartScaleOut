@@ -39,15 +39,25 @@ bitmax.getAmount = async (asset) =>{
   return balance
 }
 
-bitmax.getMarkets = async (asset) =>{
+bitmax.getMarkets = async (asset, pairing) =>{
 
-  const pair = asset + '/USDT'
-  console.log(pair)
+  const pair = asset + '/' + pairing
   const markets = await ccxt.fetchMarkets()
   .then(res => res)
- 
-  const filtered = markets.find(market => market.id === asset + '/USDT')
+  const filtered = markets.find(market => market.id = pair)
   return filtered
+}
+
+bitmax.minTick = async (asset, pairing)=>{
+  const pair = asset + '/' + pairing
+  const market = await ccxt.fetchMarkets(pair).then(res => (res))
+  const filtered = market.find(market => market.id = pair)
+  console.log(filtered);
+  const minTick = filtered.info.minQty
+  const parsed = Number(minTick).toFixed(10)
+  const number = Number(parsed)
+  console.log(number)
+  return parsed
 }
 
 bitmax.getPrice = async (asset, limit, pairing) => {
@@ -58,17 +68,11 @@ bitmax.getPrice = async (asset, limit, pairing) => {
   return price
 }
 
-bitmax.getMinQuantity = async(asset, pairing) => {
-  // const pair = asset + '/' + pairing
-  // const minSize = await ccxt.fetchMarkets()
-  // .then(markets => markets.find(market => market.id === pair).info.lotSize)
-  // build get $5 amount from exchange
-  // $5 / price
-  
+bitmax.getMinQuantity = async(asset, pairing) => {  
   const price = await bitmax.ticker(asset, pairing)
   .then(res =>(res))
-  // console.log('price is', price);
-  const minSize = 5 / price
+  .catch(err => console.log(err))
+  const minSize = 5.1 / price
   return minSize
 }
 
@@ -78,7 +82,6 @@ bitmax.ticker = async (asset, pairing)=>{
   .then( result => (result.last))
   return price
 }
-
 bitmax.cancelOrders = async (asset, pairing)=> {
   const pair = asset + '/' + pairing
   const response = await ccxt.cancelAllOrders(pair)

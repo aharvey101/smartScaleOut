@@ -1,16 +1,3 @@
-// 100 candles is enough to calculate ATR
-// From that get 14 period ATR
-
-// ask for 100 candles 
-// 10x ATR max @ 15 min candle size
-// delay 1 candle after order has been hit
-
-// use data-forge
-
-// Inputs: 
-// - Asset,
-// - 
-
 const exchange = require('../exchange')
 const talib = require('talib')
 const atrBot = {}
@@ -18,7 +5,7 @@ const atrBot = {}
 atrBot.start = async (input) => {
   // get Candles
   async function getCandles(input) {
-    const candles = await exchange.getCandles(input.asset, input.pairing, input.exchangeName, input.timeframe, 100)
+    const candles = await exchange.getCandles(input.asset, input.pairing, input.exchangeName, input.timeframe, 50)
     .then(res=>(res))
     return candles
   }
@@ -35,8 +22,7 @@ atrBot.start = async (input) => {
   //----------------------------------------------------------------
   const talibData = await convert(rawCandles)
   // calculate atr
-  const trueRange = talibATR(talibData)
-
+  
   function talibATR(talibData) {
     return talib.execute({
       name: "ATR",
@@ -48,34 +34,39 @@ atrBot.start = async (input) => {
       optInTimePeriod: 14
     })
   }
-  // calculate limit order prices using lastTrueRange
+  const trueRange = talibATR(talibData)
   const lastTrueRange = trueRange.result.outReal[0]
-
-  function createLimitOrder(input, price){
+  
+  function createLimitOrder(minQuantity, input, price){
     const amount = input.amount * 0.1
     const order = {
       asset: input.asset,
       pairing: input.pairing,
-      amount: amount,
+      amount: amount < minQuantity ? minQuantity : amount,
       price: price,
       exchangeName: input.exchangeName
     }
     return order
   }
-
+  
+  // calculate limit order prices using lastTrueRange
   function createPrice(price, ltr, multiplier) {
     return price + (ltr * multiplier)
   }
 
+  // get minQuantity
+  const minQuantity = await exchange.getMinQuantity(input.exchangeName, input.asset, input.pairing)
+  console.log(minQuantity)
   function createLimitOrderArray(number, price, lastTrueRange) {
     const array = []
     for (let i = 0; i < number; i++) {
-      const limitOrder = createLimitOrder(input, createPrice(price,lastTrueRange,[i]))
+      const limitOrder = createLimitOrder(minQuantity,input, createPrice(price,lastTrueRange,[i]))
       array.push(limitOrder)
     }
     return array
   }
   // create 10 limit orders 
+  console.log(rawCandles[0])
   const price = rawCandles[0][2]
   console.log(price)
 
@@ -90,10 +81,10 @@ atrBot.start = async (input) => {
   //   initial orders created 
   // --------------------------------
 
-  // // watch and create new orders when input timeframe candle closes
+  // watch and create new orders when input timeframe candle closes
 
   while(true) {
-    //   // calculate how many milliseconds left til each asset's period closes (UTC midnight used as base reference):
+     // calculate how many milliseconds left til each asset's period closes (UTC midnight used as base reference):
     const now = new Date()
     const utcMidnight = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
     const millisecondsSinceUTCMidnight = now.getTime() - utcMidnight.getTime()

@@ -41,12 +41,13 @@ exchange.getAmount = async (asset, exchangeName) => {
     }
 }
 
-exchange.getMarkets = (exchangeName)=>{
+exchange.getMarkets = async (asset, pairing, exchangeName)=>{
   if(exchangeName === 'bithumbPro'){
     console.log('not supported yet')
     return
   } else if(exchangeName === 'bitmax'){
-
+    const response = await bitmax.getMarkets(asset, pairing).then(response => (response))
+    return response
   }
 }
 
@@ -62,13 +63,22 @@ exchange.getPrice = async (asset,limit, exchangeName, pairing) => {
     }
 }
 
+exchange.minTick = async (asset, pairing, exchangeName) =>{
+  if(exchangeName === 'bithumbPro'){
+    console.log('not supported yet')
+    return
+  } else if(exchangeName === 'bitmax'){
+    const response = await bitmax.minTick(asset, pairing).then(response => (response))
+    return response
+  }
+}
+
 exchange.getMinQuantity = async (exchangeName, asset, pairing) =>{
   console.log('pairing is', pairing)
   if(exchangeName === 'bithumbPro') {
     bithumbPro.getMinQuantity(asset, pairing)
   } else if(exchangeName === 'bitmax'){
     const minQuantity = await bitmax.getMinQuantity(asset, pairing)
-    console.log('min quantity', minQuantity)
     return minQuantity
   }
 }

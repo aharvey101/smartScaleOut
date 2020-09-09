@@ -1,5 +1,5 @@
 require('dotenv').config()
-const CCXT = require('../extension/bithumbProProCCXT')
+const CCXT = require('../extension/bithumbProCCXT')
 const ccxt = new CCXT({
   apiKey: process.env.bithumbPro_API_PRO_KEY,
   secret: process.env.bithumbPro_API_PRO_SECRET,

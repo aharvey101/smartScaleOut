@@ -8,16 +8,16 @@ Routes:
 ## TO DO:
 
  - [] Bithumb, still not posting orders - "not ennough in account"
- - [] Rename everything bithumb to bithumbPro
+ - [x] Rename everything bithumb to bithumbPro
  - [] Test all strategies
   - [] smartSell
-    - [] bitmax
+    - [x] bitmax
     - [] bithumbPro
   - [] smartPeriodicSell
-    - [] bitmax,
+    - [x] bitmax,
     - [] bithumbPro
   - [] atrBot
-    - [] bitmax,
+    - [x] bitmax,
     - [] bithumbPro
 
 ## TODO SmartSell:
@@ -27,6 +27,8 @@ Routes:
 - [] 
 
 ## TODO atrBot:
+
+- [] How to set amount? Average volume over 30 days?
 
 - [x] Get candles
 - [x] Convert candles array into array of objects
