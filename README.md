@@ -8,7 +8,17 @@ Routes:
 ## TO DO:
 
  - [] Bithumb, still not posting orders - "not ennough in account"
- - [] Reame everything bithumb to bithumbPro
+ - [] Rename everything bithumb to bithumbPro
+ - [] Test all strategies
+  - [] smartSell
+    - [] bitmax
+    - [] bithumbPro
+  - [] smartPeriodicSell
+    - [] bitmax,
+    - [] bithumbPro
+  - [] atrBot
+    - [] bitmax,
+    - [] bithumbPro
 
 ## TODO SmartSell:
 
@@ -18,9 +28,9 @@ Routes:
 
 ## TODO atrBot:
 
-- [] Get candles
-- [] Convert candles array into array of objects
-- [] build ATR calculation
-- [] Apply calculation to candles array
-- [] Update calculation upon every new candle
-- [] Update orders upon ATR Update
+- [x] Get candles
+- [x] Convert candles array into array of objects
+- [x] build ATR calculation
+- [x] Apply calculation to candles array
+- [x] Update calculation upon every new candle
+- [x] Update orders upon ATR Update
