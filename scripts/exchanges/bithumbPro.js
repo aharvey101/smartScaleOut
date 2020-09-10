@@ -1,44 +1,39 @@
 require('dotenv').config()
 const CCXT = require('../extension/bithumbProCCXT')
 const ccxt = new CCXT({
-  apiKey: process.env.bithumbPro_API_PRO_KEY,
-  secret: process.env.bithumbPro_API_PRO_SECRET,
+  apiKey: process.env.BITHUMBPRO_API_KEY,
+  secret: process.env.BITHUMBPRO_API_SECRET,
 })
 
 
 const bithumbPro = {}
 
 bithumbPro.marketSell = async (order) =>{
-  const pair = order.asset + '/' + order.pairing
-  const price = await bithumbPro.ticker(order.asset)
-  console.log('price')
+
   const newOrder = {
-    symbol: pair,
+    symbol: order.asset + '/' + order.pairing,
     type: 'market',
     side: 'sell',
-    quantity: order.amount,
-    price: price
+    quantity: JSON.stringify(order.amount),
   }
-  console.log('new Order is', newOrder)
-const response = await ccxt.createOrder(newOrder.symbol, newOrder.type, newOrder.side, newOrder.quantity, newOrder.price)
+const response = await ccxt.createOrder(newOrder.symbol, newOrder.type, newOrder.side, newOrder.quantity, newOrder.price, )
 .then(res => (res))
 .catch(err => console.log(err))
-console.log(response)
 return response
 }
 
-bithumbPro.limitOrder = async (order) =>{
+bithumbPro.limitSell = async (order) =>{
  
     const newOrder = {
       symbol: order.asset + '/' + order.pairing,
-      type: 'market',
+      type: 'limit',
       side: 'sell',
       quantity: order.amount,
       price: order.price
     }
-    console.log(newOrder)
 const response = await ccxt.createOrder(newOrder.symbol, newOrder.type, newOrder.side, newOrder.quantity, newOrder.price)  
-.then(res => (res))
+.then(res => (res.info.data.orderId))
+.catch(err => console.log(err))
 return response
 }
 
@@ -46,31 +41,31 @@ bithumbPro.getPrice = async (asset, pairing) => {
   const pair = asset + "/" + pairing
   const price = await ccxt.fetchOrderBook(pair)
   .then((orderbook) =>(orderbook.asks[0][0]))
-  console.log('orderbook is', price)
+
   return price
 }
 
-bithumbPro.cancelOrders = async (asset, pairing) => {
+bithumbPro.cancelOrders = async (asset, pairing, orderId) => {
   const pair = asset + "/" + pairing
-  const response = await ccxt.cancelOrders(pair)
+  const response = await ccxt.cancelOrder(orderId, pair)
   .then(res => (res))
-  console.log(response)
+  .catch(err => console.log(err))
 }
 
 bithumbPro.getMinQuantity = async (asset, pairing) => {
+  // currently gets $5 worth of the asset, might change to min order quantity
 const price = await bithumbPro.ticker(asset, pairing)
 .then(res =>(res))
 const minSize = 5 / price
+
+
 return minSize
 }
 
 bithumbPro.getAmount = async (asset) =>{
   const balance = await ccxt.fetchBalance()
-  .then(res =>{
-    console.log('res from balance is', res);
-  })
+ 
   .catch(err => console.log(err))
-  console.log(balance)
   return balance
 }
 
@@ -86,10 +81,12 @@ bithumbPro.getServerTime = async () => {
   return serverTime
 }
 
-bithumbPro.getMarkets = async () =>{
+bithumbPro.getMarkets = async (asset, pairing) =>{
+  const pair = asset + "-" + pairing
   const markets = await ccxt.fetchMarkets()
   .then(result => (result))
-  console.log(markets)
+  const filtered = markets.filter(market => (market.id === pair))
+  return filtered
 }
 
 bithumbPro.getAccount = async () => {

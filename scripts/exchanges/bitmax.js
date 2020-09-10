@@ -9,9 +9,7 @@ const ccxt = new CCXT.bitmax({
 const bitmax = {}
 
 bitmax.marketSell = async ({asset, amount, pairing}) =>{
-  console.log(pairing)
-  console.log('asset is', asset),
-  console.log(amount)
+
   const pair = asset + "/" + pairing
   const response = await ccxt.createOrder( pair, 'market', 'sell', amount,)
   .then(res => (res))
@@ -21,10 +19,7 @@ bitmax.marketSell = async ({asset, amount, pairing}) =>{
 bitmax.limitSell = async (order) => {
   const pair = order.asset + '/' + order.pairing
   const response = await ccxt.createOrder(pair, 'limit', 'sell', order.amount, order.price)
-  // .then(res =>{
-  //   console.log(res)
-  // })
-  .then(res =>(res))
+  .then(res =>(res.info.orderId))
   return response
 }
 
@@ -82,9 +77,9 @@ bitmax.ticker = async (asset, pairing)=>{
   .then( result => (result.last))
   return price
 }
-bitmax.cancelOrders = async (asset, pairing)=> {
+bitmax.cancelOrders = async (asset, pairing, orderId)=> {
   const pair = asset + '/' + pairing
-  const response = await ccxt.cancelAllOrders(pair)
+  const response = await ccxt.cancelOrder(orderId,pair)
   .then((response) =>(response))
   return response
 }

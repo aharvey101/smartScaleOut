@@ -56,7 +56,6 @@ atrBot.start = async (input) => {
 
   // get minQuantity
   const minQuantity = await exchange.getMinQuantity(input.exchangeName, input.asset, input.pairing)
-  console.log(minQuantity)
   function createLimitOrderArray(number, price, lastTrueRange) {
     const array = []
     for (let i = 0; i < number; i++) {
@@ -66,17 +65,22 @@ atrBot.start = async (input) => {
     return array
   }
   // create 10 limit orders 
-  console.log(rawCandles[0])
+
   const price = rawCandles[0][2]
-  console.log(price)
+
 
 
   const ordersArray =  createLimitOrderArray(10, price, lastTrueRange)
-  console.log(ordersArray)
 
-  ordersArray.forEach(order => {
-    exchange.limitOrder(order)
+  const ordersIdArray = []
+
+  // post orders 
+  ordersArray.forEach(async(order) => {
+    const orderId = await exchange.limitOrder(order).then(res => (res))
+    //push order id's to array
+    ordersIdArray.push(orderId)
   })
+  console.log(ordersArray)
   // --------------------------------
   //   initial orders created 
   // --------------------------------
@@ -110,8 +114,13 @@ atrBot.start = async (input) => {
     //wait, then do recalculate orders
     .then(async () =>{
       // cancel orders on pair
-      exchange.cancelOrders(input.asset,input.exchangeName, input.pairing)
-      //get candles
+      console.log(ordersIdArray);
+      ordersIdArray.forEach(orderId=>{
+        exchange.cancelOrders(input.asset,input.exchangeName, input.pairing, orderId)
+      })
+
+      setTimeout(async ()=>{
+             //get candles
       const candles = await getCandles(input)
       // change candles into talibData
       const talibData = await convert(candles)
@@ -122,9 +131,13 @@ atrBot.start = async (input) => {
       // create array of orders
       const ordersArray =  createLimitOrderArray(10, price, lastTrueRange)
       // execute orders
-      ordersArray.forEach(order => {
-        exchange.limitOrder(order)
+      ordersArray.forEach(async(order) => {
+       const orderId = await exchange.limitOrder(order)
+       ordersIdArray.pop()
+       ordersIdArray.push(orderId)
       })
+      console.log(ordersIdArray)
+      },5000)
     })
   }
 

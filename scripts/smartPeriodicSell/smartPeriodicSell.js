@@ -12,7 +12,6 @@ start: async ({asset, exchangeName, days, amount, pairing}) =>{
   
   async function getMinQuantity(exchangeName, asset, pairing){
     const minQuantity = await exchange.getMinQuantity(exchangeName, asset, pairing)
-    console.log(minQuantity)
     return minQuantity
   }
   const minQuantity = await getMinQuantity(exchangeName, asset, pairing)
@@ -46,9 +45,9 @@ start: async ({asset, exchangeName, days, amount, pairing}) =>{
 
     // Generate random number between 0 and 1 minutes
   function generateRandTime(){
-    return Math.floor(Math.random() * Math.floor(60 * 1000))
+    // return Math.floor(Math.random() * Math.floor(60 * 1000))
     // for testing
-    // return Math.floor(Math.random() * Math.floor(10000))
+    return Math.floor(Math.random() * Math.floor(10000))
   }
   const go = true
   while (go) {

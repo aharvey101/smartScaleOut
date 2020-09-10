@@ -26,7 +26,8 @@ smartSell.start = async ({asset, days, amount, exchangeName, pairing}) => {
       const minutes = Number(days) * 24 * 60 * 60
       return minutes
     }
-    const intervals = calcIntervals(days)
+    // get Intervals to be used to generate amount
+  const intervals = calcIntervals(days)
   // --------------------------------------------------------------
     function getAmount(amount, intervals, minQuantity){
       const rand = Math.floor(Math.random() * Math.floor(10))
@@ -63,8 +64,10 @@ const preGen = {
 }
 
 const order = generateOrder(preGen)
-console.log('order is', order)
-exchange.limitOrder(order)
+
+const orderIdArray = []
+const orderId = await exchange.limitOrder(order)
+orderIdArray.unshift(orderId)
 const OA=amount
 let go = true
 while (go) {
@@ -89,7 +92,8 @@ while (go) {
       console.log('cancelling orders')
       // Possibly use order id instead of cancel every order incase we are running multiple strategies
       // on the one account
-      exchange.cancelOrders(asset, exchangeName, pairing)
+      const orderToCancel = orderIdArray[0]
+      exchange.cancelOrders(asset, exchangeName, pairing, orderToCancel)
       .then(async ()=>{
         // get best ask price
         console.log('placing new order')
@@ -97,17 +101,20 @@ while (go) {
         .then(lastPrice =>(lastPrice))
         // place new order
         const preGen = {
-          asset: 'BTC',
+          asset: asset,
           intervals: intervals,
           amount: OA,
           minQuantity: minQuantity,
-          exchangeName: 'bitmax',
-          pairing: 'USDT',
+          exchangeName: exchangeName,
+          pairing: pairing,
           bestPrice: price
         }
         const order = generateOrder(preGen)
         console.log('order is', order)
-       const res = exchange.limitOrder(order)
+       const orderId = await exchange.limitOrder(order).then(res=>(res))
+      orderIdArray.unshift(orderId)
+      orderIdArray.pop()
+      console.log('orderArray is',orderIdArray);
       })
     }
   }

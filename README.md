@@ -12,24 +12,25 @@ Routes:
  - [] Test all strategies
   - [] smartSell
     - [x] bitmax
-    - [] bithumbPro
+    - [x] bithumbPro
   - [] smartPeriodicSell
     - [x] bitmax,
-    - [] bithumbPro
+    - [x] bithumbPro
   - [] atrBot
     - [x] bitmax,
     - [] bithumbPro
 
 ## TODO SmartSell:
 
-- [] Cancel orders on order ID basis, not symbol wide basis
+- [x] Cancel orders on order ID basis, not symbol wide basis
 - [] Add min tick to order price so that the order is sitting at the front of the order book
 - [] 
 
 ## TODO atrBot:
 
 - [] How to set amount? Average volume over 30 days?
-
+- [] Increase amount if price is spiking up
+- [] doesn't cancel orders correctly
 - [x] Get candles
 - [x] Convert candles array into array of objects
 - [x] build ATR calculation

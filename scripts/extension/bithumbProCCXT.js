@@ -375,16 +375,17 @@ module.exports = class bithumbglobal extends Exchange {
             request['price'] = this.priceToPrecision (symbol, price);
             request['quantity'] = this.amountToPrecision (symbol, amount);
         } else {
-            const createMarketBuyOrderRequiresPrice = this.safeValue (this.options, 'createMarketBuyOrderRequiresPrice', true);
-            if (createMarketBuyOrderRequiresPrice) {
-                if (price !== undefined) {
-                    amount = amount * price;
-                } else {
-                    throw new InvalidOrder (this.id + " createOrder() requires the price argument with market buy orders to calculate total order cost (amount to spend), where cost = amount * price. Supply a price argument to createOrder() call if you want the cost to be calculated for you from price and amount, or, alternatively, add .options['createMarketBuyOrderRequiresPrice'] = false and supply the total cost value in the 'amount' argument (the exchange-specific behaviour)");
-                }
-            }
+            // const createMarketBuyOrderRequiresPrice = this.safeValue (this.options, 'createMarketBuyOrderRequiresPrice', true);
+            // if (createMarketBuyOrderRequiresPrice) {
+            //     if (price !== undefined) {
+            //         amount = amount * price;
+            //     } else {
+            //         throw new InvalidOrder (this.id + " createOrder() requires the price argument with market buy orders to calculate total order cost (amount to spend), where cost = amount * price. Supply a price argument to createOrder() call if you want the cost to be calculated for you from price and amount, or, alternatively, add .options['createMarketBuyOrderRequiresPrice'] = false and supply the total cost value in the 'amount' argument (the exchange-specific behaviour)");
+            //     }
+            // }
+            
             request['price'] = '-1';
-            request['quantity'] = this.priceToPrecision (symbol, amount);
+            request['quantity'] = amount
         }
         const response = await this.privatePostSpotPlaceOrder (this.extend (request, params));
         const responseData = this.safeValue (response, 'data', {});

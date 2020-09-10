@@ -3,11 +3,13 @@ const bithumbPro = require('./exchanges/bithumbPro')
 
 
 const exchange = {}
-exchange.marketSell = (order) => {
+exchange.marketSell = async (order) => {
   // console.log('exchangeName', order.exchangeName);
   if(order.exchangeName === 'bithumbPro'){
     console.log('selling on', order.exchangeName);
-    bithumbPro.marketSell(order)
+    const res = await bithumbPro.marketSell(order)
+    .then(res => (res))
+    return res
   } else if(order.exchangeName === 'bitmax' ) {
     console.log('selling on', order.exchangeName)
     bitmax.marketSell(order)
@@ -18,7 +20,9 @@ exchange.limitOrder = async (order) =>{
 
   if(order.exchangeName === 'bithumbPro'){
     console.log('selling on', order.exchangeName);
-    bithumbPro.marketSell(order)
+    const res = await bithumbPro.limitSell(order)
+    .then(res=>(res))
+    return res
   } else if(order.exchangeName === 'bitmax' ) {
     console.log('selling on', order.exchangeName)
     const res = await bitmax.limitSell(order)
@@ -43,8 +47,8 @@ exchange.getAmount = async (asset, exchangeName) => {
 
 exchange.getMarkets = async (asset, pairing, exchangeName)=>{
   if(exchangeName === 'bithumbPro'){
-    console.log('not supported yet')
-    return
+    const markets = await bithumbPro.getMarkets(asset, pairing).then(res => (res))
+    return markets
   } else if(exchangeName === 'bitmax'){
     const response = await bitmax.getMarkets(asset, pairing).then(response => (response))
     return response
@@ -54,9 +58,9 @@ exchange.getMarkets = async (asset, pairing, exchangeName)=>{
 exchange.getPrice = async (asset,limit, exchangeName, pairing) => {
  
     if(exchangeName === 'bithumbPro'){
-      console.log('exchange not supported yet')
       console.log('selling on', exchangeName);
-      // bithumbPro.getPrice()
+      const price = await bithumbPro.getPrice(asset, pairing).then(res => (res))
+      return price
     } else if(exchangeName === 'bitmax' ) {
      const price = await bitmax.getPrice(asset, limit, pairing)
      return price
@@ -76,19 +80,20 @@ exchange.minTick = async (asset, pairing, exchangeName) =>{
 exchange.getMinQuantity = async (exchangeName, asset, pairing) =>{
   console.log('pairing is', pairing)
   if(exchangeName === 'bithumbPro') {
-    bithumbPro.getMinQuantity(asset, pairing)
+    const minQuantity = await bithumbPro.getMinQuantity(asset, pairing).then(res=>(res))
+    return minQuantity
   } else if(exchangeName === 'bitmax'){
     const minQuantity = await bitmax.getMinQuantity(asset, pairing)
     return minQuantity
   }
 }
 
-exchange.cancelOrders = async (asset, exchangeName, pairing) => {
+exchange.cancelOrders = async (asset, exchangeName, pairing, orderId) => {
   if(exchangeName === 'bithumbPro'){
     console.log('cancelling orders on', asset)
-    bithumbPro.cancelOrders(asset, pairing)
+    bithumbPro.cancelOrders(asset, pairing, orderId)
   } else if(exchangeName === 'bitmax' ){
-    const response = await bitmax.cancelOrders(asset, pairing );
+    const response = await bitmax.cancelOrders(asset, pairing, orderId);
     return response
   }
 }
