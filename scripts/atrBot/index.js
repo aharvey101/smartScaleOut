@@ -2,6 +2,13 @@ const exchange = require('../exchange')
 const talib = require('talib')
 const atrBot = {}
 
+//TODO:
+// - [x] set amount using average 50 candle volume
+// - [x] fix orders not cancelling properly
+// - [] set Orders amount top increase if previous orders are filled
+// - [] Check if orders are limit orders or stopLimit orders
+// - [] Make multiplier overridable
+
 atrBot.start = async (input) => {
   // get Candles
   async function getCandles(input) {
@@ -10,6 +17,20 @@ atrBot.start = async (input) => {
     return candles
   }
   const rawCandles = await getCandles(input).then(res => (res))
+  // get average volume to be used for input.amount
+
+  // function avgVolume(rawCandles) {
+  //   // add up all volumes
+  //   let totalVolume = 0 
+  //   rawCandles.map(candle => {
+  //     totalVolume += candle[5]
+  //   })
+  //   const avgVolume = totalVolume / rawCandles.length
+  //   return avgVolume
+  // }
+
+  const totalAmount = avgVolume(rawCandles)
+
   // convert candles to talib style
   async function convert(candles) {
     const open = candles.map(candle =>(candle[1]))    
@@ -36,13 +57,12 @@ atrBot.start = async (input) => {
   }
   const trueRange = talibATR(talibData)
   const lastTrueRange = trueRange.result.outReal[0]
-  
-  function createLimitOrder(minQuantity, input, price){
-    const amount = input.amount * 0.1
+  function createLimitOrder(minQuantity, input, price, amount){
+    const orderAmount = amount * 0.00001
     const order = {
       asset: input.asset,
       pairing: input.pairing,
-      amount: amount < minQuantity ? minQuantity : amount,
+      amount: orderAmount < minQuantity ? minQuantity : orderAmount,
       price: price,
       exchangeName: input.exchangeName
     }
@@ -56,22 +76,19 @@ atrBot.start = async (input) => {
 
   // get minQuantity
   const minQuantity = await exchange.getMinQuantity(input.exchangeName, input.asset, input.pairing)
-  function createLimitOrderArray(number, price, lastTrueRange) {
+  // ----------------------------------------------------------------
+  function createLimitOrderArray(number, price, lastTrueRange, totalAmount) {
     const array = []
-    for (let i = 0; i < number; i++) {
-      const limitOrder = createLimitOrder(minQuantity,input, createPrice(price,lastTrueRange,[i]))
+    for (let i = 1; i < number +1; i++) {
+      const limitOrder = createLimitOrder(minQuantity,input, createPrice(price,lastTrueRange,[i]), totalAmount)
       array.push(limitOrder)
     }
     return array
   }
   // create 10 limit orders 
-
   const price = rawCandles[0][2]
-
-
-
-  const ordersArray =  createLimitOrderArray(10, price, lastTrueRange)
-
+  const ordersArray =  createLimitOrderArray(10, price, lastTrueRange, totalAmount)
+    console.log(ordersArray)
   const ordersIdArray = []
 
   // post orders 
@@ -80,7 +97,6 @@ atrBot.start = async (input) => {
     //push order id's to array
     ordersIdArray.push(orderId)
   })
-  console.log(ordersArray)
   // --------------------------------
   //   initial orders created 
   // --------------------------------
@@ -114,13 +130,35 @@ atrBot.start = async (input) => {
     //wait, then do recalculate orders
     .then(async () =>{
       // cancel orders on pair
-      console.log(ordersIdArray);
+      console.log('ordersIdArray is', ordersIdArray);
       ordersIdArray.forEach(orderId=>{
-        exchange.cancelOrders(input.asset,input.exchangeName, input.pairing, orderId)
-      })
+        setTimeout(async (orderId)=>{
+          console.log('cancelling order', orderId);
+          const res = await exchange.cancelOrders(input.asset,input.exchangeName, input.pairing, orderId)
+          .then(res=>(res))
 
+        },50,orderId)
+      })
+      console.log('cancelled orders');
+
+      let newTotalAmount = totalAmount
+      for(let i = 0; i < ordersArray.length; i++){
+        if(price > ordersArray[i].price){
+          let multiplier = 0
+          if([i] === 0){
+            multiplier = 1.5
+          } else {
+            multiplier = [i] + 1
+          }
+          newTotalAmount *= multiplier
+        } else {
+          return
+        }
+      }
+      console.log('new Total Amount is', newTotalAmount);
       setTimeout(async ()=>{
-             //get candles
+      //get candles
+      console.log('getting candles');
       const candles = await getCandles(input)
       // change candles into talibData
       const talibData = await convert(candles)
@@ -128,20 +166,30 @@ atrBot.start = async (input) => {
       const trueRange = talibATR(talibData)
       // get last candles ATR
       const lastTrueRange = trueRange.result.outReal[0]
+      const price = candles[0][2]
       // create array of orders
-      const ordersArray =  createLimitOrderArray(10, price, lastTrueRange)
+      // get current price
+     
+      // if price increases and takes out our orders, 
+      // for every order that it takes out, the totalAmount of the asset that we
+      // are going to sell (which is devided amoung all orders) is increased according
+      // to how many orders were taken out. If one order is takend out, its only increased by 1.5
+      // but two 
+      console.log('submitting new orders');
+      const ordersArray =  createLimitOrderArray(10, price, lastTrueRange, newTotalAmount)
       // execute orders
       ordersArray.forEach(async(order) => {
-       const orderId = await exchange.limitOrder(order)
-       ordersIdArray.pop()
-       ordersIdArray.push(orderId)
+        setTimeout(async(order) => {
+          const orderId = await exchange.limitOrder(order)
+           ordersIdArray.pop()
+          ordersIdArray.unshift(orderId)
+        }, 2000,order)
       })
       console.log(ordersIdArray)
-      },5000)
+      },1000)
+      console.log(ordersArray);
     })
   }
-
-
 
 }
 

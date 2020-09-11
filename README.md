@@ -10,15 +10,16 @@ Routes:
  - [] Bithumb, still not posting orders - "not ennough in account"
  - [x] Rename everything bithumb to bithumbPro
  - [] Test all strategies
-  - [] smartSell
+  - [x] smartSell
     - [x] bitmax
     - [x] bithumbPro
-  - [] smartPeriodicSell
+  - [x] smartPeriodicSell
     - [x] bitmax,
     - [x] bithumbPro
   - [] atrBot
-    - [x] bitmax,
-    - [] bithumbPro
+    - [] bitmax,
+    - [x] bithumbPro
+  - [] OpportunitySell
 
 ## TODO SmartSell:
 
@@ -28,12 +29,15 @@ Routes:
 
 ## TODO atrBot:
 
-- [] How to set amount? Average volume over 30 days?
+- [x] How to set amount? Average volume over last 50 candles
 - [] Increase amount if price is spiking up
-- [] doesn't cancel orders correctly
+- [x] doesn't cancel orders correctly
+- [x] atr is too high, workout why
 - [x] Get candles
 - [x] Convert candles array into array of objects
 - [x] build ATR calculation
 - [x] Apply calculation to candles array
 - [x] Update calculation upon every new candle
 - [x] Update orders upon ATR Update
+
+## TODO: OpportunitySell

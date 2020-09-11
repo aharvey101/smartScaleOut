@@ -68,6 +68,7 @@ bitmax.getMinQuantity = async(asset, pairing) => {
   .then(res =>(res))
   .catch(err => console.log(err))
   const minSize = 5.1 / price
+  console.log(minSize);
   return minSize
 }
 
@@ -87,6 +88,6 @@ bitmax.cancelOrders = async (asset, pairing, orderId)=> {
 bitmax.getCandles = async (asset, pairing, timeframe, limit) => {
   const pair = asset  + "/" + pairing
   const response = await ccxt.fetchOHLCV(pair, timeframe, undefined, limit).then(res => (res))
-  return response
+  return response.reverse()
 }
 module.exports = bitmax

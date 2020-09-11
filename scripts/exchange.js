@@ -90,8 +90,10 @@ exchange.getMinQuantity = async (exchangeName, asset, pairing) =>{
 
 exchange.cancelOrders = async (asset, exchangeName, pairing, orderId) => {
   if(exchangeName === 'bithumbPro'){
-    console.log('cancelling orders on', asset)
-    bithumbPro.cancelOrders(asset, pairing, orderId)
+    console.log('cancelling order on', asset)
+    const response = await bithumbPro.cancelOrders(asset, pairing, orderId)
+    .then(res=>(res))
+    return response
   } else if(exchangeName === 'bitmax' ){
     const response = await bitmax.cancelOrders(asset, pairing, orderId);
     return response

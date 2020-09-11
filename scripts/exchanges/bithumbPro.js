@@ -16,6 +16,7 @@ bithumbPro.marketSell = async (order) =>{
     side: 'sell',
     quantity: JSON.stringify(order.amount),
   }
+  
 const response = await ccxt.createOrder(newOrder.symbol, newOrder.type, newOrder.side, newOrder.quantity, newOrder.price, )
 .then(res => (res))
 .catch(err => console.log(err))
@@ -50,6 +51,7 @@ bithumbPro.cancelOrders = async (asset, pairing, orderId) => {
   const response = await ccxt.cancelOrder(orderId, pair)
   .then(res => (res))
   .catch(err => console.log(err))
+  return response
 }
 
 bithumbPro.getMinQuantity = async (asset, pairing) => {
@@ -98,7 +100,7 @@ bithumbPro.getAccount = async () => {
 bithumbPro.getCandles = async (asset, pairing, timeframe, limit) => {
   const pair = asset  + "/" + pairing
   const response = await ccxt.fetchOHLCV(pair, timeframe, undefined, limit).then(res => (res))
-  return response
+  return response.reverse()
 }
 
 module.exports = bithumbPro
