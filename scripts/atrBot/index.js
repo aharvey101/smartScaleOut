@@ -142,19 +142,19 @@ atrBot.start = async (input) => {
       console.log('cancelled orders');
 
       let newTotalAmount = totalAmount
-      for(let i = 0; i < ordersArray.length; i++){
-        if(price > ordersArray[i].price){
-          let multiplier = 0
-          if([i] === 0){
-            multiplier = 1.5
-          } else {
-            multiplier = [i] + 1
-          }
-          newTotalAmount *= multiplier
-        } else {
-          return
-        }
-      }
+      // for(let i = 0; i < ordersArray.length; i++){
+      //   if(price > ordersArray[i].price){
+      //     let multiplier = 0
+      //     if([i] === 0){
+      //       multiplier = 1.5
+      //     } else {
+      //       multiplier = [i] + 1
+      //     }
+      //     newTotalAmount *= multiplier
+      //   } else {
+      //     return
+      //   }
+      // }
       console.log('new Total Amount is', newTotalAmount);
       setTimeout(async ()=>{
       //get candles
