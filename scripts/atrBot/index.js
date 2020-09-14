@@ -8,6 +8,15 @@ const atrBot = {}
 // - [] set Orders amount top increase if previous orders are filled
 // - [] Check if orders are limit orders or stopLimit orders
 // - [] Make multiplier overridable
+// - [] make average volume an input option
+// - [] 
+
+// Input Object:
+// asset
+// pairing
+// exchangeName
+// timeframe
+// amount
 
 atrBot.start = async (input) => {
   // get Candles
@@ -19,15 +28,15 @@ atrBot.start = async (input) => {
   const rawCandles = await getCandles(input).then(res => (res))
   // get average volume to be used for input.amount
 
-  // function avgVolume(rawCandles) {
-  //   // add up all volumes
-  //   let totalVolume = 0 
-  //   rawCandles.map(candle => {
-  //     totalVolume += candle[5]
-  //   })
-  //   const avgVolume = totalVolume / rawCandles.length
-  //   return avgVolume
-  // }
+  function avgVolume(rawCandles) {
+    // add up all volumes
+    let totalVolume = 0 
+    rawCandles.map(candle => {
+      totalVolume += candle[5]
+    })
+    const avgVolume = totalVolume / rawCandles.length
+    return avgVolume
+  }
 
   const totalAmount = avgVolume(rawCandles)
 
@@ -57,6 +66,8 @@ atrBot.start = async (input) => {
   }
   const trueRange = talibATR(talibData)
   const lastTrueRange = trueRange.result.outReal[0]
+
+  //create limit order function
   function createLimitOrder(minQuantity, input, price, amount){
     const orderAmount = amount * 0.00001
     const order = {
@@ -87,7 +98,7 @@ atrBot.start = async (input) => {
   }
   // create 10 limit orders 
   const price = rawCandles[0][2]
-  const ordersArray =  createLimitOrderArray(10, price, lastTrueRange, totalAmount)
+  const ordersArray =  createLimitOrderArray(10, price, lastTrueRange, input.amount || totalAmount)
     console.log(ordersArray)
   const ordersIdArray = []
 
@@ -101,6 +112,13 @@ atrBot.start = async (input) => {
   //   initial orders created 
   // --------------------------------
 
+
+  // get milliseconds from timeframe input
+  function getMillisecondsFromTimeframe(timeframe){
+    const time = timeframe.match(/\d/g).join("")
+    return time * 60 * 1000
+  }
+
   // watch and create new orders when input timeframe candle closes
 
   while(true) {
@@ -111,9 +129,9 @@ atrBot.start = async (input) => {
   console.log(utcMidnight)
     let millisecondsToWait = 0
     // 15 minutes
-    // const thisPeriodMilliseconds = 15 * 60 * 1000
+    const thisPeriodMilliseconds = getMillisecondsFromTimeframe(input.timeframe)
     // 1 minute
-    const thisPeriodMilliseconds = 60000
+    // const thisPeriodMilliseconds = 60000
     millisecondsToWait = thisPeriodMilliseconds - (millisecondsSinceUTCMidnight % thisPeriodMilliseconds)
 
     // wait a little bit longer as exchanges take a little bit to 'wrap up' the most recent candle
@@ -185,9 +203,8 @@ atrBot.start = async (input) => {
           ordersIdArray.unshift(orderId)
         }, 2000,order)
       })
-      console.log(ordersIdArray)
+      console.log('orders id array',ordersIdArray)
       },1000)
-      console.log(ordersArray);
     })
   }
 

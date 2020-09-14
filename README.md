@@ -17,9 +17,11 @@ Routes:
     - [x] bitmax,
     - [x] bithumbPro
   - [] atrBot
-    - [] bitmax,
+    - [x] bitmax,
     - [x] bithumbPro
   - [] OpportunitySell
+    - [] bitmax
+    - [] bithumbPro
 
 ## TODO SmartSell:
 
