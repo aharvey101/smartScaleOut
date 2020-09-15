@@ -7,12 +7,12 @@ const smartSell = {}
 smartSell.start = async ({asset, days, amount, exchangeName, pairing}) => {
 
   // get orderbook best sell price:
- async function getPrice(asset,limit, exchangeName, pairing){
-    const price = await exchange.getPrice(asset,limit, exchangeName, pairing)
+ async function getAskPrice(asset,limit, exchangeName, pairing){
+    const price = await exchange.getAskPrice(asset,limit, exchangeName, pairing)
     // const minTick = await exchange.minTick(asset, pairing, exchangeName)
     return price
   }
-  const bestPrice = await getPrice(asset, 1, exchangeName, pairing)
+  const bestPrice = await getAskPrice(asset, 1, exchangeName, pairing)
   .then(price => (price))
   //----------------------------------------------------------------
   // get minQuantity allowed: 
@@ -66,7 +66,7 @@ const preGen = {
 const order = generateOrder(preGen)
 
 const orderIdArray = []
-const orderId = await exchange.limitOrder(order)
+const orderId = await exchange.limitSellOrder(order)
 orderIdArray.unshift(orderId)
 const OA=amount
 let go = true
@@ -74,16 +74,16 @@ while (go) {
   
   //get new price, 
   // Every second check orderbook for best ask price
-    async function getNewPrice(asset, limit, exchangeName, pairing) {
+    async function getNewAskPrice(asset, limit, exchangeName, pairing) {
       const price = await new Promise((resolve, reject) => {
         setTimeout((asset,limit, exchangeName, pairing) => {
-          resolve(exchange.getPrice(asset,limit, exchangeName, pairing))
+          resolve(exchange.getAskPrice(asset,limit, exchangeName, pairing))
         }, 1000, asset,limit, exchangeName, pairing)
       })
       .then(price => (price))
       return price
     }
-    const price = await getNewPrice(asset,1, exchangeName, pairing)
+    const price = await getNewAskPrice(asset,1, exchangeName, pairing)
 
     // if price has changed,cancel all orders on pair and place new order, getting the price again
     if(price !== order.price){
@@ -97,7 +97,7 @@ while (go) {
       .then(async ()=>{
         // get best ask price
         console.log('placing new order')
-        const price = await getPrice(asset,1, exchangeName, pairing)
+        const price = await getAskPrice(asset,1, exchangeName, pairing)
         .then(lastPrice =>(lastPrice))
         // place new order
         const preGen = {
@@ -111,7 +111,7 @@ while (go) {
         }
         const order = generateOrder(preGen)
         console.log('order is', order)
-       const orderId = await exchange.limitOrder(order).then(res=>(res))
+       const orderId = await exchange.limitSellOrder(order).then(res=>(res))
       orderIdArray.unshift(orderId)
       orderIdArray.pop()
       console.log('orderArray is',orderIdArray);

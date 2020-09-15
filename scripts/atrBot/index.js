@@ -6,9 +6,9 @@ const atrBot = {}
 // - [x] set amount using average 50 candle volume
 // - [x] fix orders not cancelling properly
 // - [] set Orders amount top increase if previous orders are filled
-// - [] Check if orders are limit orders or stopLimit orders
+// - [x] Check if orders are limit orders or stopLimit orders
 // - [] Make multiplier overridable
-// - [] make average volume an input option
+// - [x] make average volume an input option
 // - [] 
 
 // Input Object:
@@ -104,7 +104,7 @@ atrBot.start = async (input) => {
 
   // post orders 
   ordersArray.forEach(async(order) => {
-    const orderId = await exchange.limitOrder(order).then(res => (res))
+    const orderId = await exchange.limitSellOrder(order).then(res => (res))
     //push order id's to array
     ordersIdArray.push(orderId)
   })
@@ -198,7 +198,7 @@ atrBot.start = async (input) => {
       // execute orders
       ordersArray.forEach(async(order) => {
         setTimeout(async(order) => {
-          const orderId = await exchange.limitOrder(order)
+          const orderId = await exchange.limitSellOrder(order)
            ordersIdArray.pop()
           ordersIdArray.unshift(orderId)
         }, 2000,order)

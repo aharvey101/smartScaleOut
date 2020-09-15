@@ -38,7 +38,7 @@ const response = await ccxt.createOrder(newOrder.symbol, newOrder.type, newOrder
 return response
 }
 
-bithumbPro.getPrice = async (asset, pairing) => {
+bithumbPro.getAskPrice = async (asset, pairing) => {
   const pair = asset + "/" + pairing
   const price = await ccxt.fetchOrderBook(pair)
   .then((orderbook) =>(orderbook.asks[0][0]))

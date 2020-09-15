@@ -24,20 +24,20 @@ const talib = require('talib')
 
 // getCandles()
 
-const order = {
-  asset: "IOST",
-  pairing: "USDT",
-  amount: 1393.53424,
-  price: 0.0074,
-  exchangeName:"bithumbPro"
-}
+// const order = {
+//   asset: "IOST",
+//   pairing: "USDT",
+//   amount: 1393.53424,
+//   price: 0.0074,
+//   exchangeName:"bithumbPro"
+// }
 
-async function limitOrder(input) {
-  const res = await exchange.limitOrder(input).then(res=>(res))
-  console.log(res)
-}
+// async function limitOrder(input) {
+//   const res = await exchange.limitOrder(input).then(res=>(res))
+//   console.log(res)
+// }
 
-limitOrder(order)
+// limitOrder(order)
 
 
 
@@ -48,5 +48,12 @@ limitOrder(order)
 
 // market()
 
+// const input = {
+//   asset: 'BTC',
+//   pairing: "USDT",
+//   exchangeName: 'bitmax',
+// }
 
+const desc = talib.explain("EMA")
 
+console.log(desc);

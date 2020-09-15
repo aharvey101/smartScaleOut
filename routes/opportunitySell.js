@@ -5,7 +5,7 @@ router.post('/', function(req, res) {
   const input = req.body
 
   opportunitySell.start(input)
-
+res.send('opportunitySell started')
 })
 
 module.exports = router

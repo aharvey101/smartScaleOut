@@ -7,7 +7,7 @@ Routes:
 
 ## TO DO:
 
- - [] Bithumb, still not posting orders - "not ennough in account"
+ - [x] Bithumb, still not posting orders - "not ennough in account"
  - [x] Rename everything bithumb to bithumbPro
  - [] Test all strategies
   - [x] smartSell

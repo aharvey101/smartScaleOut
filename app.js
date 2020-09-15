@@ -25,5 +25,6 @@ const oppsell= require('./routes/opportunitySell');
 app.use('/smartPeriodicSell', smartPeriodicSell)
 app.use('/smartSell', smartSell)
 app.use('/atrBot', atrBot)
+app.use('/opportunitySell', oppsell)
 
 module.exports = app;

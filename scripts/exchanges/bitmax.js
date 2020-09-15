@@ -23,6 +23,13 @@ bitmax.limitSell = async (order) => {
   return response
 }
 
+bitmax.limitBuy = async (order) =>{
+  const pair = order.asset + '/' + order.pairing
+  const response = await ccxt.createOrder(pair, 'limit', 'buy', order.amount, order.price)
+  .then(res =>(res.info.orderId))
+  return response
+}
+
 bitmax.getAmount = async (asset) =>{
  
   const balance = await ccxt.fetchBalance()
@@ -55,7 +62,7 @@ bitmax.minTick = async (asset, pairing)=>{
   return parsed
 }
 
-bitmax.getPrice = async (asset, limit, pairing) => {
+bitmax.getAskPrice = async (asset, limit, pairing) => {
   const pair = asset + "/" + pairing
   const price = await ccxt.fetchOrderBook(pair, limit)
   .then((orderbook) =>(orderbook.asks[0][0]))
@@ -89,5 +96,17 @@ bitmax.getCandles = async (asset, pairing, timeframe, limit) => {
   const pair = asset  + "/" + pairing
   const response = await ccxt.fetchOHLCV(pair, timeframe, undefined, limit).then(res => (res))
   return response.reverse()
+}
+
+bitmax.orderBook = async (asset, pairing, limit) => {
+  const pair = asset + "/" +pairing
+  const orderbook = await ccxt.fetchOrderBook(pair).then (res => (res))
+  return orderbook
+}
+
+bitmax.getOrderStatus = async (orderId) => {
+
+  const response = await ccxt.fetchOrder(orderId).then (res =>(res))
+  return response
 }
 module.exports = bitmax
