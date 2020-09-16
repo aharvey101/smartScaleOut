@@ -1,10 +1,8 @@
 require('dotenv').config()
 const CCXT = require('ccxt')
-
 const ccxt = new CCXT.bitmax({
   apiKey: process.env.BITMAX_API_KEY,
   secret: process.env.BITMAX_API_SECRET,
-  
 })
 const bitmax = {}
 
@@ -13,6 +11,7 @@ bitmax.marketSell = async ({asset, amount, pairing}) =>{
   const pair = asset + "/" + pairing
   const response = await ccxt.createOrder( pair, 'market', 'sell', amount,)
   .then(res => (res))
+  .catch(err => console.log(err))
   return response
 }
 
@@ -112,7 +111,7 @@ bitmax.orderBook = async (asset, pairing, limit) => {
 }
 
 bitmax.getOrderStatus = async (orderId) => {
-
+// return only the order status
   const response = await ccxt.fetchOrder(orderId).then (res =>(res))
   return response
 }

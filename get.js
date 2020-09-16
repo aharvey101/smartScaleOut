@@ -3,8 +3,32 @@ const axios = require('axios')
 const bitmax = require('./scripts/exchanges/bitmax')
 const exchange = require('./scripts/exchange')
 const talib = require('talib')
+const bitmex = require('./scripts/exchanges/bitmex')
 
+async function test() {
 
+  const order = {
+    asset: 'BTC',
+    pairing: 'USD',
+    amount: 1,
+    limit: 50,
+  }
+
+  const response = await bitmex.ticker(order.asset, order.pairing).then(result =>(result))
+  console.log(response);
+
+}
+
+test()
+
+// async function listPairs (){
+//   bitmex.getMarkets()
+//   .then(res =>{
+//     console.log(res)
+//   })
+// }
+
+// listPairs()
 // async function getMinTick(){
 
 //   const asset = 'XRP'
@@ -53,7 +77,3 @@ const talib = require('talib')
 //   pairing: "USDT",
 //   exchangeName: 'bitmax',
 // }
-
-const desc = talib.explain("EMA")
-
-console.log(desc);

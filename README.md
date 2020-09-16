@@ -23,6 +23,9 @@ Routes:
     - [] bitmax
     - [] bithumbPro
 
+  - [] Convert bitmax functions to bitmex
+  - [] BithumbPro market buy not built
+
 ## TODO SmartSell:
 
 - [x] Cancel orders on order ID basis, not symbol wide basis
@@ -44,7 +47,7 @@ Routes:
 
 ## TODO: OpportunitySell
 
-- [] How to test ?
+- [] Use bitmex test environment ot test
 - [] Impliment bithumbPro order types
   - [] limitBuyOrder
   - [] marketBuy
