@@ -83,10 +83,10 @@ opportunitySell.start = async (input) => {
 
     const atrPrice = getATRPrice(rawCandles, lastTrueRange, input.orderBookATR)
 
-    function rangedOrderBook(orderBook, atrPrice  ){
+    function rangedOrderBook(orderBookBids, atrPrice  ){
       // find index in orderBook array of price that is greater than orderBookATRPrice  
-      const elementNumber = orderBook.findIndex((element) => (element[0] < atrPrice))
-      const slice = orderBook.slice(0, elementNumber)
+      const elementNumber = orderBookBids.findIndex((element) => (element[0] < atrPrice))
+      const slice = orderBookBids.slice(0, elementNumber)
       return slice
     }
     const orderBookSlice = rangedOrderBook(orderBook.bids, atrPrice)
@@ -113,6 +113,8 @@ opportunitySell.start = async (input) => {
       })
       orderBookVolumeEMA.unshift(ema.result.outReal[0]);
     }
+
+
     // 4. Calculate an offset value (ATR?EMAx2?) of slices to be used as a trigger
       // ema x 2
       const triggerEMA = orderBookVolume[1] * input.triggerEMAMultiple
@@ -124,17 +126,47 @@ opportunitySell.start = async (input) => {
           input.price = atrPrice
           //  create buy order down to atrPrice
           exchange.limitBuyOrder(input).then(orderId=>{
-            const openOrders = await exchange.getOpenOrders(input.asset, input.pairing, input.exchangeName, orderId)
-            
+            // check if order is still open after sometime (0.5 seconds?)
+            setTimeout((orderId, input)=>{
+              const orderStatus = await exchange.getOrderStatus(input.asset, input.pairing, input.exchangeName, orderId)
+              // - [] 6. Cancel order not filled
+              // if order is still open, cancel order
+              if(orderStatus != 'Filled'){
+                const res = await exchange.cancelOrders(input.assset, input.exchangeName,input.pairing, orderId).then(res=> (res))
+              } else {
+                console.log('order successfully filled')
+              }
+
+            }, input.msToCancelLimitSell, orderId, input)
+            // then
+            // - [] 7. After the orderbook has been eaten, place a small order at the top of the order book and market buy a small amount
+            setTimeout((input) => {
+              // place tiny market buy? (0.001% of ema volume?)
+              const amount = orderBookVolumeEMA * 0.00001
+              const order = {
+                asset: input.asset, 
+                pairing: input.pairing,
+                exchange: input.exchangeName, 
+                amount: amount
+              }
+              const res = await exchange.marketBuy(order).then(res=>(res))
+
+              // place tiny order at the top of the bids side of the order book             
+                const order = {
+                  asset: input.asset, 
+                  pairing: input.pairing,
+                  exchange: input.exchangeName, 
+                  amount: amount
+                  // price: exchange.bestAskPrice()
+                }
+                
+                const res = await exchange.limitBuyOrder(order)
+
+           
+
+            }, 1000,input)
           })
         }
-    
-    // 6. Cancel all orders not filled
-    //   check for order using ID
-    //    - function cancel current orders, 
-    // 7. After the orderbook has been eaten, place a small order at the top of the order book and market buy a small amount
-    // function placeTwoOrders()
-    
   }
 }
 

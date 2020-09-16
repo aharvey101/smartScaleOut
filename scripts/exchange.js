@@ -16,6 +16,19 @@ exchange.marketSell = async (order) => {
   }
 }
 
+exchange.marketBuy = async (order) =>{
+    if(order.exchangeName === 'bithumbPro'){
+      // not implimented yet
+      // const res = await bithumbPro.marketBuy(order)
+      // .then(res => (res))
+      // return res
+      return
+    } else if(order.exchangeName === 'bitmax' ) {
+      console.log('selling on', order.exchangeName)
+      bitmax.marketBuy(order)
+    }
+}
+
 exchange.limitSellOrder = async (order) =>{
 
   if(order.exchangeName === 'bithumbPro'){
@@ -137,14 +150,14 @@ exchange.getOrderBook = async (asset, pairing, exchangeName, limit) => {
     }
 }
 
-exchange.getOpenOrders = async(asset, pairing, exchangeName, orderId) =>{
+exchange.getOrderStatus = async(asset, pairing, exchangeName, orderId) =>{
   if(exchangeName === 'bithumbPro'){
     // console.log('selling on', exchangeName);
     // const price = await bithumbPro.orderBook(asset, pairing)
     console.log('not supported exchange function yet')
     return 
   } else if(exchangeName === 'bitmax' ) {
-   const price = await bitmax.getOpenOrders(asset, pairing, orderId)
+   const price = await bitmax.getOrderStatus(asset, pairing, orderId)
    return price
   }
 }

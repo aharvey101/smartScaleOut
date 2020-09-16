@@ -23,6 +23,10 @@ const response = await ccxt.createOrder(newOrder.symbol, newOrder.type, newOrder
 return response
 }
 
+bithumbPro.marketBuy = async ({asset, pairing, amount}) => {
+  
+}
+
 bithumbPro.limitSell = async (order) =>{
  
     const newOrder = {

@@ -43,3 +43,10 @@ Routes:
 - [x] Update orders upon ATR Update
 
 ## TODO: OpportunitySell
+
+- [] How to test ?
+- [] Impliment bithumbPro order types
+  - [] limitBuyOrder
+  - [] marketBuy
+- [] 5.
+- [] 6.

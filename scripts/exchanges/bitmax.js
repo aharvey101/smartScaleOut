@@ -16,6 +16,13 @@ bitmax.marketSell = async ({asset, amount, pairing}) =>{
   return response
 }
 
+bitmax.marketBuy = async ({asset, amount, pairing}) => {
+  const pair = asset + "/" + pairing
+  const response = await ccxt.createOrder( pair, 'market', 'buy', amount,)
+  .then(res => (res))
+  return response
+}
+
 bitmax.limitSell = async (order) => {
   const pair = order.asset + '/' + order.pairing
   const response = await ccxt.createOrder(pair, 'limit', 'sell', order.amount, order.price)
