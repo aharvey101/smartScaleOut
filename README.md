@@ -33,17 +33,8 @@ Routes:
 - [] 
 
 ## TODO atrBot:
-
-- [x] How to set amount? Average volume over last 50 candles
 - [] Increase amount if price is spiking up
-- [x] doesn't cancel orders correctly
-- [x] atr is too high, workout why
-- [x] Get candles
-- [x] Convert candles array into array of objects
-- [x] build ATR calculation
-- [x] Apply calculation to candles array
-- [x] Update calculation upon every new candle
-- [x] Update orders upon ATR Update
+
 
 ## TODO: OpportunitySell
 
@@ -53,3 +44,5 @@ Routes:
   - [] marketBuy
 - [] 5.
 - [] 6.
+- [] Test 
+- [] Graph

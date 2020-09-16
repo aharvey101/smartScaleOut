@@ -39,18 +39,18 @@ exchange.marketBuy = async (order) =>{
 exchange.limitSellOrder = async (order) =>{
 
   if(order.exchangeName === 'bithumbPro'){
-    console.log('selling on', order.exchangeName);
+    console.log('Placing limit order on', order.exchangeName);
     const res = await bithumbPro.limitSell(order)
     .then(res=>(res))
     return res
   } else if(order.exchangeName === 'bitmax' ) {
-    console.log('selling on', order.exchangeName)
+    console.log('Placing limit order on', order.exchangeName)
     const res = await bitmax.limitSell(order)
     .then(res => (res))
     return res
   
-  } else if(order.exchangeName === 'bitmax' ) {
-    console.log('selling on', order.exchangeName)
+  } else if(order.exchangeName === 'bitmex' ) {
+    console.log('Placing limit order on', order.exchangeName)
     const res = await bitmex.limitSell(order)
     .then(res => (res))
     return res
@@ -60,8 +60,8 @@ exchange.limitSellOrder = async (order) =>{
 exchange.limitBuyOrder = async (order)=>{
   if(order.exchangeName === 'bithumbPro'){
     console.log('selling on', order.exchangeName);
-    // const res = await bithumbPro.limitBuy(order)
-    // .then(res=>(res))
+    const res = await bithumbPro.limitBuy(order)
+    .then(res=>(res))
     return 
   } else if(order.exchangeName === 'bitmax' ) {
     console.log('selling on', order.exchangeName)
@@ -131,7 +131,6 @@ exchange.getAskPrice = async (asset,limit, exchangeName, pairing) => {
 // }
 
 exchange.getMinQuantity = async (exchangeName, asset, pairing) =>{
-  console.log('pairing is', pairing)
   if(exchangeName === 'bithumbPro') {
     const minQuantity = await bithumbPro.getMinQuantity(asset, pairing).then(res=>(res))
     return minQuantity
@@ -174,26 +173,25 @@ exchange.getCandles = async (asset, pairing,exchangeName, timeframe, limit) =>{
 
 exchange.getOrderBook = async (asset, pairing, exchangeName, limit) => {
     if(exchangeName === 'bithumbPro'){
-      console.log('selling on', exchangeName);
+      console.log('Getting Canndles from', exchangeName);
       const price = await bithumbPro.orderBook(asset, pairing)
       return price
     } else if(exchangeName === 'bitmax' ) {
-     const price = await bitmax.orderBook(asset, pairing, limit)
-     return price
-    
+      console.log('Getting Canndles from', exchangeName);
+      const price = await bitmax.orderBook(asset, pairing, limit)
+      return price
     } else if(exchangeName === 'bitmex' ) {
-     const price = await bitmex.orderBook(asset, pairing, limit)
-     return price
+      console.log('Getting Canndles from', exchangeName);
+      const price = await bitmex.orderBook(asset, pairing, limit)
+      return price
     }
   }
 exchange.getOrderStatus = async(asset, pairing, exchangeName, orderId) =>{
   if(exchangeName === 'bithumbPro'){
-    // console.log('selling on', exchangeName);
-    // const price = await bithumbPro.orderBook(asset, pairing)
-    console.log('not supported exchange function yet')
-    return 
+    const status = await bithumbPro.getOrderStatus(orderId,asset, pairing)
+    return status
   } else if(exchangeName === 'bitmax' ) {
-   const price = await bitmax.getOrderStatus(asset, pairing, orderId)
+   const price = await bitmax.getOrderStatus(orderId,asset, pairing)
    return price
   
   } else if(exchangeName === 'bitmex' ) {

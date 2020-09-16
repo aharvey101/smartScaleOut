@@ -42,6 +42,13 @@ const response = await ccxt.createOrder(newOrder.symbol, newOrder.type, newOrder
 return response
 }
 
+bithumbPro.limitBuy = async (order) =>{
+  const pair = order.asset + '/' + order.pairing
+  const response = await ccxt.createOrder(pair, 'limit', 'buy', order.amount, order.price)
+  .then(res =>(res.info.orderId))
+  return response
+}
+
 bithumbPro.getAskPrice = async (asset, pairing) => {
   const pair = asset + "/" + pairing
   const price = await ccxt.fetchOrderBook(pair)
@@ -105,6 +112,19 @@ bithumbPro.getCandles = async (asset, pairing, timeframe, limit) => {
   const pair = asset  + "/" + pairing
   const response = await ccxt.fetchOHLCV(pair, timeframe, undefined, limit).then(res => (res))
   return response.reverse()
+}
+
+bithumbPro.getOrderStatus = async (orderId, asset, pairing) => {
+  const pair = asset + '/' + pairing
+  // return only the order status
+    const response = await ccxt.fetchOrder(orderId, pair).then (res =>(res))
+    return response.info.status
+  }
+
+bithumbPro.orderBook = async (asset, pairing, limit) => {
+  const pair = asset + "/" +pairing
+  const orderbook = await ccxt.fetchOrderBook(pair).then (res => (res))
+  return orderbook
 }
 
 module.exports = bithumbPro

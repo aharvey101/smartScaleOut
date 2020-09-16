@@ -107,12 +107,14 @@ bitmax.getCandles = async (asset, pairing, timeframe, limit) => {
 bitmax.orderBook = async (asset, pairing, limit) => {
   const pair = asset + "/" +pairing
   const orderbook = await ccxt.fetchOrderBook(pair).then (res => (res))
-  return orderbook
+  return orderbook.info.status
 }
 
-bitmax.getOrderStatus = async (orderId) => {
-// return only the order status
-  const response = await ccxt.fetchOrder(orderId).then (res =>(res))
-  return response
-}
+bitmax.getOrderStatus = async (orderId, asset, pairing) => {
+  const pair = asset + '/' + pairing
+  // return only the order status
+    const response = await ccxt.fetchOrder(orderId, pair).then (res =>(res))
+    return response.info.status
+  }
+
 module.exports = bitmax

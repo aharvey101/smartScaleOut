@@ -117,12 +117,13 @@ bitmex.orderBook = async (asset, pairing, limit) => {
   return orderbook
 }
 
-bitmex.getOrderStatus = async (orderId) => {
+bitmax.getOrderStatus = async (orderId, asset, pairing) => {
+  const pair = asset + '/' + pairing
   // return only the order status
-  const response = await ccxt.fetchOrder(orderId).then(res =>(res))
-  // const justStatus = response.
-  return response
-}
+    const response = await ccxt.fetchOrder(orderId, pair).then (res =>(res))
+    return response.info.status
+  }
+
 
 bitmex.getMarkets = async (asset, pairing)=>{
   const pair = asset + pairing

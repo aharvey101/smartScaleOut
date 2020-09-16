@@ -6,20 +6,26 @@ const talib = require('talib')
 const bitmex = require('./scripts/exchanges/bitmex')
 
 async function test() {
+  // place order then get status
 
   const order = {
     asset: 'BTC',
-    pairing: 'USD',
-    amount: 1,
+    pairing: 'USDT',
+    amount: 0.001,
     limit: 50,
+    price: 11000,
+    exchangeName: 'bitmax'
   }
 
-  const response = await bitmex.ticker(order.asset, order.pairing).then(result =>(result))
-  console.log(response);
+  const orderID = await exchange.limitSellOrder(order).then(result => (result))
+  console.log(orderID)
+  const orderStatus = await exchange.getOrderStatus(order.asset, order.pairing, order.exchangeName, orderID).then(result =>(result))
 
+  console.log(orderStatus)
 }
 
 test()
+
 
 // async function listPairs (){
 //   bitmex.getMarkets()
