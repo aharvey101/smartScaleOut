@@ -1,20 +1,94 @@
 const exchange = require('../exchange')
 const talib = require('talib')
 
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+
+
+// example input:
+// {
+//   "asset": "BTC",
+//   "pairing": "USD",
+//   "exchangeName": "bitmex",
+//   "timeframe": "1h",
+//   "amount": 1,
+//   "limit": 500,
+//   "triggerEMAMultiple": 1.25,
+//   "atrMultiple": 4,
+//   "msToCancelLimitSell": 1000
+// }
+
 // Input:
 // asset
 // pairing
 // exchange Name
 // timeframe to get 
+// 
 
 const opportunitySell = {}
 
 opportunitySell.start = async (input) => {
 
+  function exportToCsv(rawCandles,atrData,orderBookVolume, volumeEMA,triggerEMA,atrMultiple){
+    const atrd = atrData.result.outReal
+    function oneATRBelowPrice(rawCandles, atrData){
+      const arr = atrData.map((atr, index)=>{
+        return rawCandles[index][3] - (atr * atrMultiple)
+      })
+      return arr
+    }
+    
+    const lineBelowPrice = oneATRBelowPrice(rawCandles,atrd)
+
+    // const rangeData = trueRange.result.outReal
+    const csvWriter = createCsvWriter({
+    path: `./out.csv`,
+    header: [
+      {id: 'timestamp', title: 'TIMESTAMP'},
+      {id: 'open', title: 'OPEN'},
+      {id: 'high', title: 'HIGH'},
+      {id: 'low', title: 'LOW'},
+      {id: 'close', title: 'CLOSE'},
+      {id: 'volume', title: 'VOLUME'},
+      {id: 'orderBookVolume', title: 'ORDER_BOOK_VOLUME'},
+      {id: 'atr', title: 'ATR'},
+      {id: 'volumeEMA', title: 'VOLUME_EMA'},
+      {id:'triggerEMA', title: 'TRIGGER_EMA'}
+  
+    ]
+  })
+  
+  const convertCSV = (candleData, lineBelowPrice,orderBookVolume, volumeEMA,triggerEMA) =>{
+    const newCandleData = candleData.slice(0, atrData.length)
+    const rows = newCandleData.map((candle, index)=>{ 
+        return {
+              timestamp: candle[0],
+              open: candle [1],
+              high: candle [2],
+              low: candle [3],
+              close: candle [4],
+              volume: candle [5],
+              orderBookVolume: orderBookVolume[index],
+              atr: lineBelowPrice[index],
+              volumeEMA: volumeEMA[index],
+              triggerEMA: triggerEMA[index]
+            }
+      })
+  
+   return rows
+  }
+  
+  const csvReady = convertCSV(rawCandles, lineBelowPrice, orderBookVolume, volumeEMA,triggerEMA)
+  
+  csvWriter.writeRecords(csvReady)
+  .then(() =>console.log('done writing record'))
+
+  }
+
   // loop variables:
   // array for keeping slices:
   const orderBookVolume = []
   const orderBookVolumeEMA = []
+  const triggerEMAArray = []
 
   // start loop
   // - [X] 1. Take slices of order book at certain intervals (5min/15min? long run 5sec/10sec testing)
@@ -34,16 +108,7 @@ opportunitySell.start = async (input) => {
     // get  orderbook
     const orderBook = await waitOrderBook(input)
     // GET 
-    // take out volume from orderbook
-    function removeVolume(orderBook) {
-      const noVol = orderBook.map(order => {
-        return order[0]
-      })
-      return noVol
-      // console.log('noVol is',noVol)
-    }
-    const orderBookPrices = removeVolume(orderBook.asks) 
-
+    
       //get Candles
     const rawCandles = await waitCandles(input)
     // convert candle data to talib ready
@@ -79,9 +144,10 @@ opportunitySell.start = async (input) => {
 
     const getATRPrice = (rawCandles, lastTrueRange, orderBookATR) =>{
       const orderBookATRPrice = rawCandles[0][3] - (lastTrueRange* orderBookATR)
+      return orderBookATRPrice
     }
 
-    const atrPrice = getATRPrice(rawCandles, lastTrueRange, input.orderBookATR)
+    const atrPrice = getATRPrice(rawCandles, lastTrueRange, input.atrMultiple)
 
     function rangedOrderBook(orderBookBids, atrPrice  ){
       // find index in orderBook array of price that is greater than orderBookATRPrice  
@@ -112,27 +178,33 @@ opportunitySell.start = async (input) => {
         optInTimePeriod: 14,
       })
       orderBookVolumeEMA.unshift(ema.result.outReal[0]);
+      // calculate trigger EMA  
+      const triggerEMA = orderBookVolumeEMA[0] * input.triggerEMAMultiple
+      triggerEMAArray.unshift(triggerEMA)
+
     }
 
 
     // 4. Calculate an offset value (ATR?EMAx2?) of slices to be used as a trigger
       // ema x 2
-      const triggerEMA = orderBookVolume[1] * input.triggerEMAMultiple
+    
+      // 4.1 export to csv
+      exportToCsv(rawCandles,trueRange,orderBookVolume,orderBookVolumeEMA,triggerEMAArray, input.atrMultiple)
 
     // 5. When triggered, gobble up the slice of the orderbook
     //   if orderbook volume exceeds trigger, use limit order to eat order book
-        if(orderBookVolume[0] > triggerEMA){
+        if(orderBookVolume[0] > triggerEMAArray[0]){
           input.amount = (orderBookVolume[0] * 1.1)
           input.price = atrPrice
           //  create buy order down to atrPrice
           exchange.limitBuyOrder(input).then(orderId=>{
             // check if order is still open after sometime (0.5 seconds?)
-            setTimeout((orderId, input)=>{
+            setTimeout(async (orderId, input)=>{
               const orderStatus = await exchange.getOrderStatus(input.asset, input.pairing, input.exchangeName, orderId)
               // - [] 6. Cancel order not filled
               // if order is still open, cancel order
               if(orderStatus != 'Filled'){
-                const res = await exchange.cancelOrders(input.assset, input.exchangeName,input.pairing, orderId).then(res=> (res))
+                const res = await exchange.cancelOrders(input.asset, input.exchangeName,input.pairing, orderId).then(res=> (res))
               } else {
                 console.log('order successfully filled')
               }
@@ -140,19 +212,19 @@ opportunitySell.start = async (input) => {
             }, input.msToCancelLimitSell, orderId, input)
             // then
             // - [] 7. After the orderbook has been eaten, place a small order at the top of the order book and market buy a small amount
-            setTimeout((input) => {
+            setTimeout(async (input) => {
               // place tiny market buy? (0.001% of ema volume?)
               const amount = orderBookVolumeEMA * 0.00001
-              const order = {
+              const marketOrder = {
                 asset: input.asset, 
                 pairing: input.pairing,
                 exchange: input.exchangeName, 
                 amount: amount
               }
-              const res = await exchange.marketBuy(order).then(res=>(res))
+              const marketBuyResponse = await exchange.marketBuy(marketOrder).then(res=>(res))
 
               // place tiny order at the top of the bids side of the order book             
-                const order = {
+                const limitOrder = {
                   asset: input.asset, 
                   pairing: input.pairing,
                   exchange: input.exchangeName, 
@@ -160,9 +232,7 @@ opportunitySell.start = async (input) => {
                   // price: exchange.bestAskPrice()
                 }
                 
-                const res = await exchange.limitBuyOrder(order)
-
-           
+              const limitBuyResponse = await exchange.limitBuyOrder(order)
 
             }, 1000,input)
           })

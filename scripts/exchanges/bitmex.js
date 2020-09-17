@@ -8,7 +8,6 @@ const ccxt = new CCXT.bitmex({
 })
 if(ccxt.urls['test']){
   ccxt.urls['api'] = ccxt.urls['test']
-  console.log(ccxt.urls['api'])
 }
 
 const bitmex = {}
@@ -117,7 +116,7 @@ bitmex.orderBook = async (asset, pairing, limit) => {
   return orderbook
 }
 
-bitmax.getOrderStatus = async (orderId, asset, pairing) => {
+bitmex.getOrderStatus = async (orderId, asset, pairing) => {
   const pair = asset + '/' + pairing
   // return only the order status
     const response = await ccxt.fetchOrder(orderId, pair).then (res =>(res))

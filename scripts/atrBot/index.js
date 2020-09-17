@@ -1,6 +1,29 @@
 const exchange = require('../exchange')
 const talib = require('talib')
 const atrBot = {}
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+
+const csvWriter = createCsvWriter({
+  path: `./out.csv`,
+  header: [
+    {id: 'timestamp', title: 'TIMESTAMP'},
+    {id: 'open', title: 'OPEN'},
+    {id: 'high', title: 'HIGH'},
+    {id: 'low', title: 'LOW'},
+    {id: 'close', title: 'CLOSE'},
+    {id: 'volume', title: 'VOLUME'},
+    {id: 'atr1', title: 'ATR1'},
+    {id: 'atr2', title: 'ATR2'},
+    {id: 'atr3', title: 'ATR3'},
+    {id: 'atr4', title: 'ATR4'},
+    {id: 'atr5', title: 'ATR5'},
+    {id: 'atr6', title: 'ATR6'},
+    {id: 'atr7', title: 'ATR7'},
+    {id: 'atr8', title: 'ATR8'},
+    {id: 'atr9', title: 'ATR9'},
+    {id: 'atr10', title: 'ATR10'},
+  ]
+})
 
 //TODO:
 // - [x] set amount using average 50 candle volume
@@ -21,11 +44,46 @@ const atrBot = {}
 atrBot.start = async (input) => {
   // get Candles
   async function getCandles(input) {
-    const candles = await exchange.getCandles(input.asset, input.pairing, input.exchangeName, input.timeframe, 50)
+    const candles = await exchange.getCandles(input.asset, input.pairing, input.exchangeName, input.timeframe, input.limit)
     .then(res=>(res))
     return candles
   }
   const rawCandles = await getCandles(input).then(res => (res))
+  // convert data to anyStock ready format
+
+  // atrData array is shorter than the candleData
+
+  const convertCSV = (candleData, atrData) =>{
+
+    const newCandleData = candleData.slice(0, atrData.length)
+
+    const rows = newCandleData.map((candle, index)=>{ 
+        return {
+              timestamp: candle[0],
+              open: candle [1],
+              high: candle [2],
+              low: candle [3],
+              close: candle [4],
+              volume: candle [5],
+              atr1: atrData[index][0],
+              atr2: atrData[index][1],
+              atr3: atrData[index][2],
+              atr4: atrData[index][3],
+              atr5: atrData[index][4],
+              atr6: atrData[index][5],
+              atr7: atrData[index][6],
+              atr8: atrData[index][7],
+              atr9: atrData[index][8],
+              atr10: atrData[index][9]
+            }
+          // }
+      })
+    console.table(rows)
+
+   return rows
+  }
+
+
   // get average volume to be used for input.amount
 
   function avgVolume(rawCandles) {
@@ -51,8 +109,9 @@ atrBot.start = async (input) => {
   }
   //----------------------------------------------------------------
   const talibData = await convert(rawCandles)
-  // calculate atr
+
   
+  // calculate atr
   function talibATR(talibData) {
     return talib.execute({
       name: "ATR",
@@ -61,11 +120,36 @@ atrBot.start = async (input) => {
       high: talibData.high,
       low: talibData.low,
       close: talibData.close,
-      optInTimePeriod: 14
+      optInTimePeriod: 22
     })
   }
   const trueRange = talibATR(talibData)
   const lastTrueRange = trueRange.result.outReal[0]
+
+  function createATRArray (trueRange, highPrice, multiplier){
+   
+  const atrArray = trueRange.map(range => {
+     const arr = []
+    // create 10 atr price points
+    for(let i = 1; i < multiplier; i++){
+      const atr = (range * [i]) + highPrice[i]
+      arr.push(atr)
+    }
+    return arr
+  })
+  // console.table('atr array is', atrArray)
+  return atrArray
+  }
+
+  const atrData = createATRArray(trueRange.result.outReal, talibData.high, 11)
+
+  const csvReady = convertCSV(rawCandles, atrData) 
+  // write raw candles to csv
+  csvWriter.writeRecords(csvReady)
+  .then(() =>{
+    console.log('done writing record');
+  })
+  
 
   //create limit order function
   function createLimitOrder(minQuantity, input, price, amount){
@@ -99,7 +183,6 @@ atrBot.start = async (input) => {
   // create 10 limit orders 
   const price = rawCandles[0][2]
   const ordersArray =  createLimitOrderArray(10, price, lastTrueRange, input.amount || totalAmount)
-    console.log(ordersArray)
   const ordersIdArray = []
 
   // post orders 
