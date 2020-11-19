@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Smart Scaleout Bots
 
 This is a set of bots attached to an express app with an API built for exiting large crypto positions over time using technical analysis based trading bots. It currently only supports bitmax, bithumbPro and bitmex for testing.
@@ -94,6 +93,3 @@ Please make sure to update tests as appropriate.
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
-=======
-
->>>>>>> d5d084e0260dde963b2d07cd959e74ac5b1c77e8
