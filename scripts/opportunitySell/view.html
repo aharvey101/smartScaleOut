@@ -44,11 +44,10 @@
 
     function drawChart() {
       anychart.data.loadCsvFile("/out.csv", function (data) {
-        
         // create a data table
         dataTable = anychart.data.table(0);
         dataTable.addData(data);
-        console.table(data);
+        
         // map data
         let mapping = dataTable.mapAs({ 'open': 1, 'high': 2, 'low': 3, 'close': 4 });
         let atr1 = dataTable.mapAs({value: 7})
@@ -104,5 +103,10 @@
 </head>
 <body>
   <div id="container" style="width: 100vw; height: 100vh"></div>
+  <div id="nav">
+    <span id="name"></span>
+    <span id="prev" class="button" onclick="offset+=1;updateData();">Prev</span> 
+    <span id="next" class="button" onclick="if(offset-1>=0){offset-=1;updateData();}">Next</span>
+  </div>
 </body>
 </html>
